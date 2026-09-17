@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyecto | Factor Lambda</title>
+  <meta name="description" content="Detalle de proyecto Factor Lambda con presupuesto por WhatsApp.">
+  <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&display=swap");
+    :root {
+      --black: #070707;
+      --panel: #171717;
+      --orange: #ff7a1a;
+      --red: #ff241d;
+      --white: #fff;
+      --muted: #aaa;
+      --line: rgba(255,255,255,.12);
+      --green: #15c768;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--white);
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      background: #101010;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 22px;
+      padding: 12px clamp(18px, 5vw, 76px);
+      background: rgba(12,12,12,.94);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand img { width: clamp(190px, 18vw, 280px); }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: clamp(14px, 1.6vw, 26px);
+      font: 900 18px "Teko", Arial, sans-serif;
+      text-transform: uppercase;
+    }
+    nav a {
+      position: relative;
+      padding: 8px 0;
+      color: rgba(255,255,255,.72);
+    }
+    nav a.is-active, nav a:hover { color: #fff; }
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      transition: width .2s ease;
+    }
+    nav a.is-active::after, nav a:hover::after { width: 100%; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 20px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--red), #ffae16);
+      font: 900 19px "Teko", Arial, sans-serif;
+      white-space: nowrap;
+    }
+    main {
+      padding: clamp(24px, 4vw, 54px) clamp(18px, 5vw, 76px) 64px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.1), #101010 36%),
+        radial-gradient(circle at 50% 0, rgba(255,122,26,.12), transparent 42%);
+    }
+    .detail-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 28px;
+      max-width: 1370px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      filter: brightness(.72) saturate(.95) contrast(1.08);
+    }
+    .gallery img:first-child {
+      grid-column: span 2;
+      grid-row: span 2;
+      height: 312px;
+      border-color: rgba(255,122,26,.75);
+    }
+    .project-title,
+    .about,
+    .quote-card {
+      margin-top: 22px;
+      padding: 28px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+    .brandline {
+      color: #ffb000;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0;
+      font: 700 clamp(52px, 7vw, 82px) "Teko", Arial, sans-serif;
+      line-height: .88;
+      text-transform: uppercase;
+    }
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .badge {
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,122,26,.45);
+      color: var(--orange);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .about h2 {
+      margin: 0 0 14px;
+      color: #ffb000;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: .25em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .about p {
+      margin: 0;
+      color: rgba(255,255,255,.84);
+      font-size: 20px;
+      line-height: 1.55;
+    }
+    .quote-card {
+      position: sticky;
+      top: 92px;
+      margin-top: 0;
+      box-shadow: 0 24px 70px rgba(0,0,0,.38);
+    }
+    .quote-card .mini {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .quote-card h2 {
+      margin: 4px 0 18px;
+      font: 700 38px "Teko", Arial, sans-serif;
+      line-height: 1;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .quote-card h2 span { color: var(--orange); }
+    .online {
+      margin-bottom: 16px;
+      padding: 11px 13px;
+      border: 1px solid rgba(21,199,104,.45);
+      background: rgba(21,199,104,.1);
+      color: rgba(255,255,255,.76);
+      font-size: 15px;
+    }
+    .online strong { color: #ffb000; }
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      color: rgba(255,255,255,.7);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    input {
+      width: 100%;
+      min-height: 45px;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      background: #101010;
+      color: var(--white);
+      font: 700 16px "Teko", "Arial Narrow", Arial, sans-serif;
+      outline: none;
+    }
+    input:focus { border-color: rgba(255,122,26,.75); }
+    .contact-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .contact-options button {
+      min-height: 62px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: #111;
+      color: rgba(255,255,255,.7);
+      font: 900 14px "Teko", "Arial Narrow", Arial, sans-serif;
+    }
+    .contact-options button:first-child {
+      border-color: var(--red);
+      color: #fff;
+    }
+    .submit {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 16px;
+      border: 0;
+      background: linear-gradient(90deg, var(--red), #ffae16);
+      color: var(--white);
+      font: 900 25px "Teko", Arial, sans-serif;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .quick {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .quick a {
+      display: grid;
+      place-items: center;
+      min-height: 46px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: #101010;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .quick a:first-child {
+      border-color: rgba(21,199,104,.55);
+      color: var(--green);
+    }
+    .floating-whatsapp {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #050505;
+      box-shadow: 0 18px 44px rgba(255,122,26,.35);
+    }
+    .floating-whatsapp svg { width: 28px; height: 28px; }
+    @media (max-width: 980px) {
+      header { display: flex; flex-direction: column; align-items: flex-start; }
+      nav { justify-content: flex-start; flex-wrap: wrap; }
+      .detail-layout { grid-template-columns: 1fr; }
+      .quote-card { position: static; }
+    }
+    @media (max-width: 640px) {
+      .gallery { grid-template-columns: 1fr 1fr; }
+      .gallery img, .gallery img:first-child { height: 190px; grid-column: auto; grid-row: auto; }
+      .contact-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="index.html#inicio" aria-label="Factor Lambda">
+      <img src="assets/factor-lambda-main.png" alt="Factor Lambda">
+    </a>
+    <nav aria-label="Navegacion principal">
+      <a href="index.html#inicio">Inicio</a>
+      <a href="index.html#galeria">Coches</a>
+      <a href="index.html#equipo">Servicios</a>
+      <a class="is-active" href="proyectos.html">Proyectos</a>
+      <a href="reprogramaciones.html">Reprogramaciones</a>
+    </nav>
+    <a class="cta" href="https://wa.me/34644313664" target="_blank" rel="noopener">Pide tu cita · +34 644 31 36 64</a>
+  </header>
+
+  <main>
+    <div class="detail-layout">
+      <div>
+        <div class="gallery">
+          <img src="assets/before-after-urus.jpeg" alt="Proyecto Factor Lambda">
+          <img src="assets/box-lamborghini.jpeg" alt="Trabajo en box Factor Lambda">
+          <img src="assets/cupra-revo-card.png" alt="Cupra Leon REVO">
+          <img src="assets/hero-factor-lambda.jpeg" alt="Porsche rojo en taller">
+          <img src="assets/joaquin-funez.png" alt="Banco de potencia Factor Lambda">
+          <img src="assets/marc-gil.png" alt="Area escapes Factor Lambda">
+        </div>
+
+        <section class="project-title">
+          <div class="brandline">Factor Lambda</div>
+          <h1>Proyecto Performance</h1>
+          <div class="badges">
+            <span class="badge">Reprogramacion</span>
+            <span class="badge">Banco de potencia</span>
+            <span class="badge">Preparacion</span>
+          </div>
+        </section>
+
+        <section class="about">
+          <h2>Sobre el proyecto</h2>
+          <p>Trabajo realizado en nuestras instalaciones con diagnosis, medicion, puesta a punto y entrega final revisada. Cada vehiculo se estudia de forma individual para mejorar prestaciones, fiabilidad y sensaciones al volante.</p>
+        </section>
+      </div>
+
+      <aside class="quote-card">
+        <div class="mini">Quieres uno asi?</div>
+        <h2>Pide tu <span>presupuesto</span></h2>
+        <div class="online">3 asesores en linea · respondemos en <strong>&lt;1h</strong></div>
+        <form>
+          <label for="name">Nombre</label>
+          <input id="name" type="text" placeholder="Tu nombre">
+          <label for="phone">Telefono</label>
+          <input id="phone" type="tel" placeholder="644 31 36 64">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="tu@email.com">
+          <label>Como te contactamos?</label>
+          <div class="contact-options">
+            <button type="button">WhatsApp</button>
+            <button type="button">Llamada</button>
+            <button type="button">Email</button>
+          </div>
+          <button class="submit" type="button">Pedir presupuesto</button>
+        </form>
+        <div class="quick">
+          <a href="https://wa.me/34644313664" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="tel:+34644313664">Llamar</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <a class="floating-whatsapp" href="https://wa.me/34644313664" target="_blank" rel="noopener" aria-label="Abrir WhatsApp de Factor Lambda">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.5 11.8a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.3-4.8A8.5 8.5 0 1 1 20.5 11.8Z"></path>
+      <path d="M8.8 8.9c.2 3 2.5 5.3 5.5 5.8l1.4-1.3c.3-.3.8-.4 1.2-.2l1.5.7"></path>
+    </svg>
+  </a>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "public": true,
+  "rewrites": [
+    {
+      "source": "/api/instagram-feed",
+      "destination": "/api/instagram-feed.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/outputs/$1"
+    }
+  ]
+}

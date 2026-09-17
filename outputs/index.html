@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factor Lambda Motorsport</title>
+  <meta name="description" content="Factor Lambda Motorsport, equipo de competicion, noticias, calendario y contenido en directo.">
+  <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+  <link rel="apple-touch-icon" href="assets/favicon.jpg">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&display=swap");
+
+    :root {
+      --black: #050505;
+      --ink: #101010;
+      --orange: #ff7a1a;
+      --orange-soft: #ff9a3d;
+      --white: #ffffff;
+      --muted: #b8b8b8;
+      --line: rgba(255, 255, 255, .14);
+      --panel: #121212;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--black);
+    }
+
+    body {
+      margin: 0;
+      color: var(--white);
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      background:
+        linear-gradient(180deg, rgba(5, 5, 5, .22), var(--black) 82vh),
+        var(--black);
+      letter-spacing: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: center;
+      padding: 10px clamp(18px, 5vw, 76px);
+      background: #000;
+      color: var(--muted);
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .socials, .contact-line, nav, .live-grid, .news-grid, .stat-grid {
+      display: flex;
+      align-items: center;
+    }
+
+    .socials {
+      gap: 18px;
+      text-transform: lowercase;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .socials a {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255, 255, 255, .82);
+      transition: color .2s ease;
+    }
+
+    .socials a:hover { color: var(--orange); }
+
+    .socials svg {
+      width: 15px;
+      height: 15px;
+      color: var(--orange);
+      flex: 0 0 auto;
+    }
+
+    .contact-line { gap: 26px; flex-wrap: wrap; justify-content: flex-end; }
+    .contact-line span::before { color: var(--orange); margin-right: 7px; }
+    .phone::before { content: "TEL"; }
+    .pin::before { content: "BOX"; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 22px;
+      width: 100%;
+      padding: 18px clamp(18px, 5vw, 76px);
+      background: rgba(0, 0, 0, .78);
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+      backdrop-filter: blur(14px);
+      transition: width .28s ease, top .28s ease, margin .28s ease, padding .28s ease, border-radius .28s ease, background-color .28s ease, border-color .28s ease, box-shadow .28s ease;
+    }
+
+    header.is-scrolled {
+      top: 14px;
+      width: min(calc(100% - 32px), 1180px);
+      margin: 0 auto;
+      padding: 12px 22px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .48);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .32);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 210px;
+    }
+
+    .brand img {
+      width: clamp(215px, 24vw, 360px);
+      height: auto;
+      object-fit: contain;
+    }
+
+    header.is-scrolled .brand img {
+      width: clamp(168px, 18vw, 240px);
+    }
+
+    .footer-brand img {
+      width: min(100%, 360px);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    nav {
+      justify-content: center;
+      gap: clamp(14px, 1.6vw, 26px);
+      flex-wrap: nowrap;
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--white);
+      text-transform: uppercase;
+    }
+
+    nav a {
+      position: relative;
+      padding: 8px 0 10px;
+      color: rgba(255, 255, 255, .7);
+      transition: color .2s ease;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      transition: width .2s ease;
+    }
+
+    nav a:hover,
+    nav a.is-active {
+      color: var(--white);
+    }
+
+    nav a:hover::after,
+    nav a.is-active::after {
+      width: 100%;
+    }
+
+    .whatsapp-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f12824, #ffae16);
+      color: var(--white);
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 12px 28px rgba(255, 122, 26, .18);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .whatsapp-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(255, 122, 26, .28);
+    }
+
+    .whatsapp-button svg {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+    }
+
+    .floating-whatsapp {
+      position: fixed;
+      right: clamp(18px, 3vw, 34px);
+      bottom: clamp(18px, 3vw, 34px);
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 20px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: #050505;
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      text-transform: uppercase;
+      box-shadow: 0 18px 42px rgba(255, 122, 26, .34);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .floating-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 22px 52px rgba(255, 122, 26, .44);
+    }
+
+    .floating-whatsapp svg {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(110px, 14vw, 180px) clamp(18px, 5vw, 76px) 56px;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, .86), rgba(0, 0, 0, .25) 55%, rgba(0, 0, 0, .64)),
+        linear-gradient(0deg, rgba(0, 0, 0, .86), rgba(0, 0, 0, .05) 46%, rgba(0, 0, 0, .38)),
+        url("assets/hero-factor-lambda.jpeg") center 68% / cover;
+    }
+
+    .hero-inner {
+      max-width: 1040px;
+    }
+
+    .eyebrow {
+      color: var(--orange-soft);
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Teko", "Arial Narrow", "Arial Black", sans-serif;
+      text-transform: uppercase;
+      margin: 0;
+      line-height: .9;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(52px, 11vw, 150px);
+      max-width: 980px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: rgba(255, 255, 255, .9);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.55;
+      margin: 18px 0 0;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 22px;
+      border: 1px solid var(--orange);
+      background: var(--orange);
+      color: #090909;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--white);
+      border-color: rgba(255, 255, 255, .32);
+    }
+
+    section {
+      padding: clamp(52px, 8vw, 98px) clamp(18px, 5vw, 76px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 32px;
+    }
+
+    h2 { font-size: clamp(34px, 5vw, 72px); }
+
+    .section-head p {
+      max-width: 500px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .event {
+      background: #050505;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .event-wrap {
+      text-align: center;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .event .eyebrow {
+      color: #ff2d2d;
+      margin-bottom: 24px;
+    }
+
+    .event h2 span {
+      color: var(--orange);
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 44px;
+      text-align: left;
+    }
+
+    .flip-card {
+      min-height: 230px;
+      perspective: 1200px;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      min-height: 230px;
+      transform-style: preserve-3d;
+      transition: transform .65s ease;
+    }
+
+    .flip-card:hover .flip-inner,
+    .flip-card:focus-within .flip-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: 30px 26px;
+      min-height: 230px;
+      background: #181818;
+      border: 1px solid rgba(255, 255, 255, .1);
+      backface-visibility: hidden;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(145deg, #171717, #0a0a0a);
+      border-color: rgba(255, 122, 26, .45);
+    }
+
+    .service-icon {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      border: 1px solid rgba(255, 122, 26, .52);
+      border-radius: 4px;
+      color: var(--orange);
+      background: rgba(255, 122, 26, .08);
+    }
+
+    .service-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .flip-face h3 {
+      font-size: 21px;
+      line-height: 1.1;
+    }
+
+    .flip-face p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .news-grid {
+      align-items: stretch;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .news-card {
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      overflow: hidden;
+      position: relative;
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .news-card.featured img {
+      object-position: center 58%;
+    }
+
+    .news-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .05), rgba(0, 0, 0, .9));
+      z-index: 1;
+    }
+
+    .news-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .28s ease;
+    }
+
+    .news-card:hover img { transform: scale(1.05); }
+
+    .news-copy {
+      position: relative;
+      z-index: 2;
+      padding: 22px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: var(--black);
+      background: var(--orange);
+      font-size: 10px;
+      font-weight: 900;
+      padding: 5px 8px;
+    }
+
+    .news-copy h3 {
+      font-size: clamp(20px, 2vw, 27px);
+      line-height: 1.04;
+      margin-bottom: 14px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .merch {
+      display: grid;
+      grid-template-columns: .95fr 1fr;
+      gap: clamp(32px, 6vw, 82px);
+      align-items: center;
+      background:
+        linear-gradient(90deg, #0a0a0a 38%, rgba(10, 10, 10, .28) 72%, rgba(10, 10, 10, .08)),
+        url("assets/box-lamborghini.jpeg") center 58% / cover;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .merch-copy p {
+      color: rgba(255, 255, 255, .84);
+      line-height: 1.7;
+      font-size: 17px;
+      max-width: 570px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .14);
+      margin-top: 32px;
+      max-width: 660px;
+    }
+
+    .stat {
+      background: rgba(0, 0, 0, .78);
+      padding: 22px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--orange);
+      font-family: "Teko", "Arial Narrow", "Arial Black", sans-serif;
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .services-catalog {
+      background: #111;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .services-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .service-box {
+      display: flex;
+      flex-direction: column;
+      min-height: 318px;
+      padding: 28px;
+      background: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .service-box-icon {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 24px;
+      color: #ff2020;
+      background: rgba(255, 32, 32, .08);
+      border: 1px solid rgba(255, 32, 32, .34);
+      border-radius: 5px;
+    }
+
+    .service-box-icon svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    .service-box h3 {
+      font-size: clamp(28px, 2.5vw, 36px);
+      line-height: .95;
+      margin-bottom: 12px;
+    }
+
+    .service-box p {
+      color: rgba(255, 255, 255, .78);
+      line-height: 1.5;
+      font-size: 16px;
+      margin: 0 0 20px;
+    }
+
+    .service-logo {
+      display: grid;
+      place-items: center;
+      min-height: 86px;
+      margin-bottom: 20px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: #f6f6f6;
+      border: 1px solid rgba(255, 122, 26, .42);
+    }
+
+    .service-logo img {
+      width: min(100%, 210px);
+      max-height: 72px;
+      object-fit: contain;
+    }
+
+    .service-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+      margin-bottom: 18px;
+    }
+
+    .service-tags span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .11);
+      border: 1px solid rgba(255, 255, 255, .18);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .service-link {
+      width: max-content;
+      color: #ffb000;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .live {
+      background: #050505;
+      color: var(--white);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .live .section-head p { color: var(--muted); }
+
+    .live-grid {
+      align-items: stretch;
+      display: grid;
+      grid-template-columns: minmax(280px, 460px);
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .live-card {
+      background: #101010;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-top: 3px solid var(--orange);
+      padding: 26px;
+      min-height: 285px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .live-card h3 {
+      font-size: 28px;
+      color: var(--white);
+      margin-bottom: 14px;
+    }
+
+    .live-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .live-badge {
+      width: max-content;
+      color: var(--white);
+      background: var(--orange);
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .obd-visual {
+      width: 100%;
+      height: 96px;
+      margin: 2px 0 16px;
+      border-radius: 6px;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255, 122, 26, .28), transparent 34%),
+        linear-gradient(145deg, #222, #050505);
+      border: 1px solid rgba(255, 122, 26, .3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .obd-visual::before {
+      content: "OBD";
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      color: rgba(255, 255, 255, .92);
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .obd-visual::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      width: 92px;
+      height: 28px;
+      border-radius: 5px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 8px, transparent 8px 13px),
+        #111;
+      border: 1px solid rgba(255, 255, 255, .22);
+    }
+
+    .breggy-logo-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 96px;
+      margin: 2px 0 16px;
+      padding: 16px;
+      border-radius: 6px;
+      background: #050505;
+      border: 1px solid rgba(0, 178, 255, .35);
+    }
+
+    .breggy-logo-wrap img {
+      width: 100%;
+      max-height: 58px;
+      object-fit: contain;
+    }
+
+    .transformations {
+      background:
+        radial-gradient(circle at center top, rgba(255, 122, 26, .12), transparent 42%),
+        #101010;
+      text-align: center;
+    }
+
+    .transformations .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      color: #ff2a22;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .transformations .section-kicker::before,
+    .transformations .section-kicker::after {
+      content: "";
+      width: 48px;
+      height: 1px;
+      background: #ff2a22;
+    }
+
+    .transformations h2 {
+      margin: 0;
+      font-size: clamp(46px, 6vw, 82px);
+    }
+
+    .transformations h2 span {
+      background: linear-gradient(90deg, #ff2a22, #ffad16);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .transformations-intro {
+      max-width: 620px;
+      margin: 8px auto 42px;
+      color: rgba(255, 255, 255, .82);
+      font-size: 20px;
+      line-height: 1.45;
+    }
+
+    .before-after-wrap {
+      width: min(100%, 650px);
+      margin: 0 auto;
+    }
+
+    .compare {
+      --split: 50%;
+      position: relative;
+      aspect-ratio: 1.32 / 1;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .46);
+      background: #050505;
+    }
+
+    .compare img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .compare-after {
+      clip-path: inset(0 0 0 var(--split));
+    }
+
+    .compare-label {
+      position: absolute;
+      top: 14px;
+      z-index: 2;
+      padding: 7px 10px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, .66);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .compare-label.before { left: 14px; }
+    .compare-label.after { right: 14px; }
+
+    .compare-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--split);
+      z-index: 3;
+      width: 2px;
+      background: rgba(255, 255, 255, .88);
+      transform: translateX(-1px);
+      pointer-events: none;
+    }
+
+    .compare-handle::after {
+      content: "<>";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .92);
+      color: #090909;
+      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, .38);
+    }
+
+    .compare input {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: ew-resize;
+    }
+
+    .transformation-caption {
+      margin-top: 18px;
+    }
+
+    .transformation-caption h3 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .transformation-caption p {
+      margin: 0 auto;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 1.25fr .8fr .8fr;
+      grid-auto-rows: 245px;
+      gap: 14px;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, .1);
+      filter: saturate(.94) contrast(1.05);
+    }
+
+    .gallery img:first-child { grid-row: span 2; }
+
+    footer {
+      padding: 54px clamp(18px, 5vw, 76px) 30px;
+      background: #000;
+      border-top: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.1fr repeat(3, .7fr);
+      gap: 30px;
+      align-items: start;
+    }
+
+    footer h3 {
+      color: var(--orange);
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    footer p, footer a {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 8px;
+    }
+
+    .copyright {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .topbar { display: none; }
+      header {
+        position: sticky;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      header.is-scrolled {
+        width: calc(100% - 20px);
+        padding: 14px 18px;
+        border-radius: 22px;
+      }
+      nav { justify-content: flex-start; }
+      .whatsapp-button { min-height: 38px; font-size: 13px; }
+      .merch, .footer-grid { grid-template-columns: 1fr; }
+      .flip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .news-grid, .live-grid, .services-catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .gallery { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .hero { min-height: 72vh; }
+      .section-head { display: grid; }
+      .flip-grid, .news-grid, .live-grid, .stat-grid, .gallery, .services-catalog-grid { grid-template-columns: 1fr; }
+      .gallery { grid-auto-rows: 220px; }
+      .gallery img:first-child { grid-row: auto; }
+      .news-card { min-height: 330px; }
+      .merch {
+        background:
+          linear-gradient(180deg, #0a0a0a 8%, rgba(10, 10, 10, .76)),
+          url("assets/box-lamborghini.jpeg") center 62% / cover;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="socials">
+      <a href="https://www.instagram.com/factorlambda" target="_blank" rel="noopener" aria-label="Instagram Factor Lambda">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+          <circle cx="12" cy="12" r="4"></circle>
+          <circle cx="17.5" cy="6.5" r="1"></circle>
+        </svg>
+        @factorlambda
+      </a>
+      <a href="https://www.tiktok.com/@factorlambda" target="_blank" rel="noopener" aria-label="TikTok Factor Lambda">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+          <path d="M16.6 3c.4 2.8 2 4.5 4.6 4.7v3.2a8.6 8.6 0 0 1-4.5-1.3v5.8c0 3.3-2.1 5.6-5.4 5.6-3 0-5.2-2.1-5.2-5 0-3.2 2.5-5.4 6.1-5.1v3.3c-1.6-.3-2.7.4-2.7 1.7 0 1 .8 1.7 1.9 1.7 1.2 0 2-.7 2-2.3V3h3.2z"></path>
+        </svg>
+        @factorlambda
+      </a>
+    </div>
+    <div class="contact-line">
+      <span class="phone">+34 644 31 36 64</span>
+      <span class="pin">Carrer Vilar D'Abdelà Nº3 Nave 6</span>
+    </div>
+  </div>
+
+  <header>
+    <a class="brand" href="#inicio" aria-label="Factor Lambda">
+      <img src="assets/factor-lambda-main.png" alt="Factor Lambda">
+    </a>
+    <nav aria-label="Navegacion principal">
+      <a class="is-active" href="#inicio">Inicio</a>
+      <a href="#galeria">Coches</a>
+      <a href="equipo.html">Equipo</a>
+      <a href="#equipo">Servicios</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="reprogramaciones.html">Reprogramaciones</a>
+    </nav>
+    <a class="whatsapp-button" href="https://wa.me/34644313664" target="_blank" rel="noopener" aria-label="Pide tu cita por WhatsApp al +34 644 31 36 64">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.92.33 1.82.63 2.68a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.11-.45c.86.3 1.76.51 2.68.63A2 2 0 0 1 22 16.92z"/>
+      </svg>
+      Pide tu cita · +34 644 31 36 64
+    </a>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-inner">
+        <div class="eyebrow">#BuiltToPerform</div>
+        <h1 class="sr-only">Factor Lambda</h1>
+        <p>Un taller creado para llevar cada vehiculo al siguiente nivel, donde cada reprogramacion, cada medicion en banco de potencia y cada preparacion se convierten en mas prestaciones, mas fiabilidad y mejores sensaciones al volante.</p>
+        <p>Especialistas en reprogramaciones, escapes, revisiones y preparaciones para quienes buscan algo mas que conducir: buscan rendimiento.</p>
+        <div class="cta-row">
+          <a class="button" href="reprogramaciones.html">Reprogramaciones</a>
+          <a class="button secondary" href="proyectos.html">Proyectos</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="event" id="calendario">
+      <div class="event-wrap">
+        <div class="eyebrow">Lo que hacemos</div>
+        <h2>Nuestras <span>reprogramaciones</span></h2>
+        <div class="flip-grid">
+          <article class="flip-card" tabindex="0">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="service-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m14.7 6.3 3 3"></path><path d="M9 15 3.8 20.2"></path><path d="M5.5 18.5 3 16l5.2-5.2"></path><path d="M14 7l3-3 3 3-3 3"></path><path d="M7 13l4 4"></path>
+                  </svg>
+                </div>
+                <h3>Preparacion</h3>
+                <p>Tu coche, listo para circuito o competicion.</p>
+              </div>
+              <div class="flip-face flip-back">
+                <h3>Setup a medida</h3>
+                <p>Suspension, frenos, neumaticos, alineado y puesta a punto para sacar rendimiento con criterio.</p>
+              </div>
+            </div>
+          </article>
+          <article class="flip-card" tabindex="0">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="service-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M5 6H3v2a4 4 0 0 0 4 4"></path><path d="M19 6h2v2a4 4 0 0 1-4 4"></path>
+                  </svg>
+                </div>
+                <h3>Competicion</h3>
+                <p>Apoyo y participacion en campeonatos nacionales.</p>
+              </div>
+              <div class="flip-face flip-back">
+                <h3>Track support</h3>
+                <p>Asistencia en pista, planificacion de tandas, estrategia y soporte tecnico durante el evento.</p>
+              </div>
+            </div>
+          </article>
+          <article class="flip-card" tabindex="0">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="service-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 17h14l-1.5-5.5A3 3 0 0 0 14.6 9H9.4a3 3 0 0 0-2.9 2.5L5 17Z"></path><path d="M7 17v2"></path><path d="M17 17v2"></path><circle cx="8.5" cy="17" r="1.5"></circle><circle cx="15.5" cy="17" r="1.5"></circle>
+                  </svg>
+                </div>
+                <h3>Escapes</h3>
+                <p>Sistemas deportivos con sonido y rendimiento.</p>
+              </div>
+              <div class="flip-face flip-back">
+                <h3>Sonido a medida</h3>
+                <p>Instalacion y asesoramiento en escapes, catalizadores deportivos y configuraciones homologables.</p>
+              </div>
+            </div>
+          </article>
+          <article class="flip-card" tabindex="0">
+            <div class="flip-inner">
+              <div class="flip-face">
+                <div class="service-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                </div>
+                <h3>Mantenimiento</h3>
+                <p>Servicio tecnico especializado en sport.</p>
+              </div>
+              <div class="flip-face flip-back">
+                <h3>Cuidado experto</h3>
+                <p>Revisiones, diagnosis, preventivo y mantenimiento de alto rendimiento con enfoque de taller especialista.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="noticias">
+      <div class="section-head">
+        <h2>Proyectos</h2>
+        <p>Actualidad del box, preparacion de fin de semana y objetivos de carrera de Factor Lambda.</p>
+      </div>
+      <div class="news-grid">
+        <article class="news-card featured">
+          <img src="assets/cupra-revo-card.png" alt="Cupra Leon REVO Stage 2+">
+          <div class="news-copy">
+            <span class="tag">Racing</span>
+            <h3>Cupra Leon Multimapa REVO para plataformas MQB EA888 Gen.3 Stage 2+ con 415CV.</h3>
+            <div class="meta">24 junio 2026 · 4 min</div>
+          </div>
+        </article>
+        <article class="news-card">
+          <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Cook-0Q3A2909-650x433.jpg" alt="Piloto de competicion junto al coche">
+          <div class="news-copy">
+            <span class="tag">Team</span>
+            <h3>Golf 8 Clubsport, que tras nuestra reprogramacion Stage 1+ entrega hasta +420 CV.</h3>
+            <div class="meta">16 junio 2026 · 3 min</div>
+          </div>
+        </article>
+        <article class="news-card">
+          <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Quali-3-650x403.jpg" alt="Coche de carreras en clasificacion">
+          <div class="news-copy">
+            <span class="tag">Qualifying</span>
+            <h3>SEAT LEON CUPRA STAGE 4 con 600CV</h3>
+            <div class="meta">11 junio 2026 · 5 min</div>
+          </div>
+        </article>
+        <article class="news-card">
+          <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Race-Day-199-650x433.jpg" alt="Coche de carreras Factor Lambda en accion">
+          <div class="news-copy">
+            <span class="tag">Preview</span>
+            <h3>Factor Lambda preparado para atacar el circuito mas rapido</h3>
+            <div class="meta">2 junio 2026 · 3 min</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="merch" id="equipo">
+      <div class="merch-copy">
+        <div class="eyebrow">Servicios</div>
+        <h2>Viste el box de Factor Lambda</h2>
+        <p>Unas instalaciones de 570 m² donde se respira autentica pasion por el motor. Un espacio disenado para ofrecer un servicio integral, con banco de potencia, oficinas de atencion al cliente, amplio parking con capacidad para mas de 20 vehiculos y una zona exclusiva dedicada a la compra y venta de vehiculos a traves de nuestro concesionario, FL Garage Cars.</p>
+        <p>Un lugar donde la experiencia, el rendimiento y la confianza se unen para dar el mejor servicio a cada cliente.</p>
+        <a class="button" href="#contacto">Pedir informacion</a>
+        <div class="stat-grid">
+          <div class="stat"><strong>3</strong><span>Elevadores</span></div>
+          <div class="stat"><strong>1</strong><span>Banco de potencia</span></div>
+          <div class="stat"><strong>FL</strong><span>Concesionario</span></div>
+        </div>
+      </div>
+      <div aria-hidden="true"></div>
+    </section>
+
+    <section class="services-catalog">
+      <div class="services-catalog-grid">
+        <article class="service-box">
+          <div class="service-box-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1Z"></path></svg>
+          </div>
+          <h3>Preparación para circuito</h3>
+          <p>Adaptamos tu coche para sacar el máximo rendimiento en pista. Suspensión, frenos, motor y aerodinámica.</p>
+          <div class="service-tags"><span>Suspensión</span><span>Frenos</span><span>Aero</span></div>
+          <a class="service-link" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar →</a>
+        </article>
+        <article class="service-box">
+          <div class="service-box-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"></path><path d="M5 6H3v2a4 4 0 0 0 4 4"></path><path d="M19 6h2v2a4 4 0 0 1-4 4"></path></svg>
+          </div>
+          <h3>Competición</h3>
+          <p>Te acompañamos en campeonatos. Logística, asistencia técnica y preparación integral del vehículo.</p>
+          <div class="service-tags"><span>Logística</span><span>Asistencia</span></div>
+          <a class="service-link" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar →</a>
+        </article>
+        <article class="service-box">
+          <div class="service-logo" aria-hidden="true">
+            <img src="assets/fl-garage-logo.png" alt="">
+          </div>
+          <h3>Compraventa de vehículos deportivos y alta gama</h3>
+          <p>Compra y venta de deportivos seleccionados a traves de FL Garage Cars, con asesoramiento, confianza y unidades cuidadas al detalle.</p>
+          <div class="service-tags"><span>Deportivos</span><span>Alta gama</span><span>FL Garage</span></div>
+          <a class="service-link" href="https://www.flgarage.net" target="_blank" rel="noopener">Consultar →</a>
+        </article>
+        <article class="service-box">
+          <div class="service-box-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+          </div>
+          <h3>Mantenimiento especializado</h3>
+          <p>Servicio técnico enfocado en vehículos de altas prestaciones. Revisiones, ITV y puesta a punto.</p>
+          <div class="service-tags"><span>Revisiones</span><span>ITV</span></div>
+          <a class="service-link" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar →</a>
+        </article>
+        <article class="service-box">
+          <div class="service-box-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a8 8 0 0 1 16 0"></path><path d="M12 14l4-4"></path></svg>
+          </div>
+          <h3>Reprogramación ECU</h3>
+          <p>Optimización de la gestión electrónica del motor para mejorar potencia y respuesta.</p>
+          <div class="service-tags"><span>Potencia</span><span>Respuesta</span></div>
+          <a class="service-link" href="reprogramaciones.html">Consultar →</a>
+        </article>
+        <article class="service-box">
+          <div class="service-box-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m14.7 6.3 3 3"></path><path d="M9 15 3.8 20.2"></path><path d="M5.5 18.5 3 16l5.2-5.2"></path><path d="M14 7l3-3 3 3-3 3"></path><path d="M7 13l4 4"></path></svg>
+          </div>
+          <h3>Piezas y accesorios</h3>
+          <p>Suministro e instalación de piezas de competición y accesorios de alta calidad.</p>
+          <div class="service-tags"><span>Competición</span><span>Carbono</span></div>
+          <a class="service-link" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="live" id="directo">
+      <div class="section-head">
+        <h2>Servicios Live</h2>
+        <p>Acceso rapido a audio, comentarios, tiempos y video para seguir el fin de semana como si estuvieras dentro del muro.</p>
+      </div>
+      <div class="live-grid">
+        <article class="live-card">
+          <div>
+            <div class="live-badge">APP</div>
+            <div class="breggy-logo-wrap">
+              <img src="assets/breggy-largo.png" alt="Breggy">
+            </div>
+            <h3>Breggy Car</h3>
+            <p>Breggy Car es un dispositivo OBD pensado para controlar mantenimientos y revisiones de tu vehiculo desde una app. Disponible para venta en nuestras instalaciones.</p>
+          </div>
+          <a class="button" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="transformations" id="transformaciones">
+      <div class="section-kicker">Transformaciones</div>
+      <h2>Antes y <span>despues</span></h2>
+      <p class="transformations-intro">Desliza para ver nuestras transformaciones. Cada proyecto pasa por el taller con criterio, detalle y rendimiento.</p>
+      <div class="before-after-wrap">
+        <div class="compare" style="--split: 50%;">
+          <img src="assets/box-lamborghini.jpeg" alt="Antes de la transformacion">
+          <img class="compare-after" src="assets/before-after-urus.jpeg" alt="Despues de la transformacion">
+          <span class="compare-label before">Antes</span>
+          <span class="compare-label after">Despues</span>
+          <span class="compare-handle" aria-hidden="true"></span>
+          <input type="range" min="0" max="100" value="50" aria-label="Deslizar antes y despues">
+        </div>
+        <div class="transformation-caption">
+          <h3>Audi RSQ8 · Preparacion</h3>
+          <p>Transformacion integral en taller: puesta a punto, detalle tecnico y entrega lista para disfrutar.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="galeria">
+      <div class="section-head">
+        <h2>Coches</h2>
+        <p>Momentos del equipo, detalles de preparacion y accion en pista.</p>
+      </div>
+      <div class="gallery">
+        <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Race-Day-199-650x433.jpg" alt="Coche en plena carrera">
+        <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Cook-0Q3A2909-650x433.jpg" alt="Piloto junto al coche">
+        <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/Quali-3-650x403.jpg" alt="Coche en clasificacion">
+        <img src="https://onemotorsport.co.uk/wp-content/uploads/2025/06/btcc-Snetterton-25-1-of-1-63-650x434.jpg" alt="Coche en circuito">
+        <img src="https://onemotorsport.co.uk/wp-content/uploads/2023/04/Stephen-Jelley-Teamwear-650x433.jpeg" alt="Ropa de equipo">
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacto">
+    <div class="footer-grid">
+      <div>
+        <a class="brand footer-brand" href="#inicio" aria-label="Factor Lambda">
+          <img src="assets/factor-lambda-main.png" alt="Factor Lambda">
+        </a>
+        <p>#BuiltToPerform</p>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <div class="footer-links">
+          <a href="#equipo">About</a>
+          <a href="#contacto">Contacto</a>
+          <a href="proyectos.html">Proyectos</a>
+        </div>
+      </div>
+      <div>
+        <h3>Follow us</h3>
+        <div class="footer-links">
+          <a href="https://www.instagram.com/factorlambda" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.tiktok.com/@factorlambda" target="_blank" rel="noopener">TikTok</a>
+        </div>
+      </div>
+      <div>
+        <h3>Box</h3>
+        <p>Carrer Vilar D'Abdelà Nº3 Nave 6<br>+34 644 31 36 64</p>
+      </div>
+    </div>
+    <div class="copyright">Factor Lambda Motorsport. Pagina inspirada en una estetica de equipo profesional de competicion.</div>
+  </footer>
+  <script>
+    const siteHeader = document.querySelector("header");
+    const navLinks = [...document.querySelectorAll("nav a")];
+    const pageSections = [...document.querySelectorAll("main section[id], footer[id]")];
+
+    const updateHeader = () => {
+      siteHeader.classList.toggle("is-scrolled", window.scrollY > 28);
+    };
+
+    const updateActiveNav = () => {
+      const current = pageSections
+        .filter((section) => section.getBoundingClientRect().top <= 140)
+        .at(-1) || pageSections[0];
+
+      navLinks.forEach((link) => {
+        link.classList.toggle("is-active", link.getAttribute("href") === `#${current.id}`);
+      });
+    };
+
+    updateHeader();
+    updateActiveNav();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    window.addEventListener("scroll", updateActiveNav, { passive: true });
+
+    document.querySelectorAll(".compare").forEach((compare) => {
+      const slider = compare.querySelector("input");
+      const updateCompare = () => compare.style.setProperty("--split", `${slider.value}%`);
+      slider.addEventListener("input", updateCompare);
+      updateCompare();
+    });
+  </script>
+  <a class="floating-whatsapp" href="https://wa.me/34644313664" target="_blank" rel="noopener" aria-label="Abrir WhatsApp de Factor Lambda">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.5 11.8a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.3-4.8A8.5 8.5 0 1 1 20.5 11.8Z"></path>
+      <path d="M8.8 8.9c.2 3 2.5 5.3 5.5 5.8l1.4-1.3c.3-.3.8-.4 1.2-.2l1.5.7"></path>
+    </svg>
+    WhatsApp
+  </a>
+</body>
+</html>
