@@ -1,21 +1,35 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/",
-      "destination": "/outputs/index.html"
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/api/instagram-feed",
-      "destination": "/api/instagram-feed.js"
+      "src": "outputs/**",
+      "use": "@vercel/static"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/outputs/assets/$1"
+      "src": "assets/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/outputs/index.html"
     },
     {
-      "source": "/(.*)",
-      "destination": "/outputs/$1"
+      "src": "/api/instagram-feed",
+      "dest": "/api/instagram-feed.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/outputs/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/outputs/$1"
     }
   ]
 }
