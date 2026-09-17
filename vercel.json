@@ -10,6 +10,10 @@
       "destination": "/api/instagram-feed.js"
     },
     {
+      "source": "/assets/(.*)",
+      "destination": "/outputs/assets/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/outputs/$1"
     }
