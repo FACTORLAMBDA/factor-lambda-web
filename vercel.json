@@ -3,6 +3,10 @@
   "public": true,
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/outputs/index.html"
+    },
+    {
       "source": "/api/instagram-feed",
       "destination": "/api/instagram-feed.js"
     },
