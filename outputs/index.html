@@ -905,20 +905,26 @@
 
     .gallery {
       display: grid;
-      grid-template-columns: 1.25fr .8fr .8fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       grid-auto-rows: 245px;
       gap: 14px;
+      width: min(100%, 1480px);
+      margin: 0 auto;
     }
 
     .gallery img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
       border: 1px solid rgba(255, 255, 255, .1);
       filter: saturate(.94) contrast(1.05);
     }
 
-    .gallery img:first-child { grid-row: span 2; }
+    .gallery img:first-child,
+    .gallery img:nth-child(6) {
+      grid-row: span 2;
+    }
 
     footer {
       padding: 54px clamp(18px, 5vw, 76px) 30px;
@@ -977,6 +983,8 @@
       .flip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .news-grid, .live-grid, .services-catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .gallery { grid-template-columns: 1fr 1fr; }
+      .gallery img:first-child,
+      .gallery img:nth-child(6) { grid-row: auto; }
     }
 
     @media (max-width: 640px) {
