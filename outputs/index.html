@@ -53,7 +53,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, .08);
     }
 
-    .socials, .contact-line, nav, .live-grid, .news-grid, .stat-grid {
+    .socials, .contact-line, nav, .news-grid, .stat-grid {
       display: flex;
       align-items: center;
     }
@@ -649,113 +649,6 @@
       text-transform: uppercase;
     }
 
-    .live {
-      background: #050505;
-      color: var(--white);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .live .section-head p { color: var(--muted); }
-
-    .live-grid {
-      align-items: stretch;
-      display: grid;
-      grid-template-columns: minmax(280px, 460px);
-      justify-content: center;
-      gap: 18px;
-    }
-
-    .live-card {
-      background: #101010;
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-top: 3px solid var(--orange);
-      padding: 26px;
-      min-height: 285px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .live-card h3 {
-      font-size: 28px;
-      color: var(--white);
-      margin-bottom: 14px;
-    }
-
-    .live-card ul {
-      margin: 0;
-      padding-left: 18px;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    .live-badge {
-      width: max-content;
-      color: var(--white);
-      background: var(--orange);
-      padding: 4px 8px;
-      font-size: 10px;
-      font-weight: 900;
-      margin-bottom: 18px;
-    }
-
-    .obd-visual {
-      width: 100%;
-      height: 96px;
-      margin: 2px 0 16px;
-      border-radius: 6px;
-      background:
-        radial-gradient(circle at 50% 22%, rgba(255, 122, 26, .28), transparent 34%),
-        linear-gradient(145deg, #222, #050505);
-      border: 1px solid rgba(255, 122, 26, .3);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .obd-visual::before {
-      content: "OBD";
-      position: absolute;
-      left: 18px;
-      top: 18px;
-      color: rgba(255, 255, 255, .92);
-      font-family: "Teko", "Arial Narrow", Arial, sans-serif;
-      font-size: 34px;
-      line-height: 1;
-    }
-
-    .obd-visual::after {
-      content: "";
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
-      width: 92px;
-      height: 28px;
-      border-radius: 5px;
-      background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 8px, transparent 8px 13px),
-        #111;
-      border: 1px solid rgba(255, 255, 255, .22);
-    }
-
-    .breggy-logo-wrap {
-      display: grid;
-      place-items: center;
-      min-height: 96px;
-      margin: 2px 0 16px;
-      padding: 16px;
-      border-radius: 6px;
-      background: #050505;
-      border: 1px solid rgba(0, 178, 255, .35);
-    }
-
-    .breggy-logo-wrap img {
-      width: 100%;
-      max-height: 58px;
-      object-fit: contain;
-    }
-
     .transformations {
       background:
         radial-gradient(circle at center top, rgba(255, 122, 26, .12), transparent 42%),
@@ -984,7 +877,7 @@
       .whatsapp-button { min-height: 38px; font-size: 13px; }
       .merch, .footer-grid { grid-template-columns: 1fr; }
       .flip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .news-grid, .live-grid, .services-catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .news-grid, .services-catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .gallery { grid-template-columns: 1fr 1fr; }
       .gallery img:first-child,
       .gallery img:nth-child(6) { grid-row: auto; }
@@ -993,7 +886,7 @@
     @media (max-width: 640px) {
       .hero { min-height: 72vh; }
       .section-head { display: grid; }
-      .flip-grid, .news-grid, .live-grid, .stat-grid, .gallery, .services-catalog-grid { grid-template-columns: 1fr; }
+      .flip-grid, .news-grid, .stat-grid, .gallery, .services-catalog-grid { grid-template-columns: 1fr; }
       .gallery { grid-auto-rows: 220px; }
       .gallery img:first-child { grid-row: auto; }
       .news-card { min-height: 330px; }
@@ -1252,26 +1145,6 @@
           <p>Suministro e instalación de piezas de competición y accesorios de alta calidad.</p>
           <div class="service-tags"><span>Competición</span><span>Carbono</span></div>
           <a class="service-link" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar →</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="live" id="directo">
-      <div class="section-head">
-        <h2>Servicios Live</h2>
-        <p>Acceso rapido a audio, comentarios, tiempos y video para seguir el fin de semana como si estuvieras dentro del muro.</p>
-      </div>
-      <div class="live-grid">
-        <article class="live-card">
-          <div>
-            <div class="live-badge">APP</div>
-            <div class="breggy-logo-wrap">
-              <img src="/assets/breggy-largo.png" alt="Breggy">
-            </div>
-            <h3>Breggy Car</h3>
-            <p>Breggy Car es un dispositivo OBD pensado para controlar mantenimientos y revisiones de tu vehiculo desde una app. Disponible para venta en nuestras instalaciones.</p>
-          </div>
-          <a class="button" href="https://wa.me/34644313664" target="_blank" rel="noopener">Consultar</a>
         </article>
       </div>
     </section>
