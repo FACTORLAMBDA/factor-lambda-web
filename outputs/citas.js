@@ -1,154 +1,78 @@
 (() => {
-  const style = document.createElement('style');
-  style.textContent = `
-    .appointment-dialog{width:min(620px,calc(100% - 28px));max-height:90dvh;padding:28px;border:1px solid #444;border-radius:8px;background:#141414;color:#fff;font-family:Arial,sans-serif;box-sizing:border-box;overflow:auto}
-    .appointment-dialog::backdrop{background:#000b}.appointment-dialog *{box-sizing:border-box}.appointment-dialog h2{font:700 28px Arial,sans-serif;margin:0 40px 20px 0}.appointment-dialog p{color:#ccc;line-height:1.5}.appointment-close{position:absolute;right:16px;top:12px;background:none;border:0;color:white;font-size:30px;cursor:pointer}.appointment-dialog label{display:block;margin:16px 0 6px;font-weight:bold}.appointment-dialog select,.appointment-dialog input,.appointment-dialog textarea{width:100%;background:#222;color:#fff;border:1px solid #666;border-radius:4px;padding:12px;font:16px Arial,sans-serif}.appointment-dialog textarea{min-height:80px}.appointment-dialog button[type=submit]{width:100%;margin-top:22px;padding:14px;background:#ff8015;color:#111;border:0;font-weight:bold;font-size:16px;cursor:pointer}.appointment-price{padding:14px 0;border-bottom:1px solid #444;color:#ffad46!important;font-weight:bold}.appointment-dialog [hidden]{display:none}.appointment-note{font-size:13px}.appointment-dialog .appointment-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:480px){.appointment-dialog .appointment-row{grid-template-columns:1fr;gap:0}.appointment-dialog{padding:22px}}
-  `;
-  style.textContent += `
-    .appointment-calendar{margin-top:18px;border:1px solid #454545;border-radius:8px;overflow:hidden;background:#1c1c1e;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .appointment-calendar-head{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px;padding:16px 10px;border-bottom:1px solid #444;text-align:center}
-    .appointment-calendar-head button{height:38px;border:0;background:transparent;color:#ff8015;font-size:26px;cursor:pointer}.appointment-calendar-head button:disabled{opacity:.3;cursor:default}
-    .appointment-calendar-head strong{display:block;font-size:18px;text-transform:capitalize}.appointment-calendar-head input{margin-top:8px;padding:6px;font-size:14px;color-scheme:dark}
-    .appointment-agenda{max-height:330px;overflow:auto;overscroll-behavior:contain;padding:12px 12px 12px 0}
-    .appointment-dialog .appointment-slot{display:grid;grid-template-columns:62px minmax(0,1fr);align-items:stretch;margin:0;font-weight:normal;min-height:54px;cursor:pointer}
-    .appointment-slot time{font-size:12px;color:#aaa;text-align:right;padding:10px 10px 0 0;font-variant-numeric:tabular-nums}
-    .appointment-slot span{display:flex;align-items:center;gap:8px;border-top:1px solid #3a3a3c;padding:10px 12px;font-size:14px;color:#ddd}
-    .appointment-dialog .appointment-slot input{width:16px;height:16px;margin:0;accent-color:#ff8015;flex-shrink:0}
-    .appointment-slot:has(input:checked) span{background:#64320d;color:#fff;border-left:3px solid #ff8015}.appointment-slot:has(input:focus-visible) span{outline:2px solid white;outline-offset:-2px}.appointment-slot:hover span{background:#35302b}
-    .appointment-calendar-selection{margin:0!important;padding:12px;border-top:1px solid #444;font-size:14px;color:#ffad46!important}
-  `;
-  document.head.append(style);
-  const dialog = document.createElement('dialog');
-  dialog.className = 'appointment-dialog';
-  dialog.setAttribute('aria-labelledby', 'appointment-title');
-  dialog.innerHTML = `
-    <button type="button" class="appointment-close" aria-label="Cerrar">&times;</button>
-    <h2 id="appointment-title">PEDIR CITA</h2>
-    <p class="appointment-note">Vista previa · No se realizan reservas ni cobros.</p>
-    <form>
-      <label for="appointment-mode">Tipo de cita</label>
-      <select id="appointment-mode" required><option value="phone">Telefónica</option><option value="visit">Presencial</option></select>
-      <p class="appointment-price" id="appointment-price"></p>
-      <p id="appointment-description"></p>
-      <label for="appointment-topic">¿Cuál es el motivo de la consulta?</label>
-      <select id="appointment-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica / posibles diagnósticos</option><option value="tuning">Reprogramaciones</option></select>
-      <label for="appointment-details">Cuéntanos tu consulta y el vehículo</label>
-      <textarea id="appointment-details" required maxlength="1500" placeholder="Modelo, motor y dudas que quieres resolver"></textarea>
-      <div id="appointment-schedule" hidden>
-        <p id="appointment-professional" aria-live="polite"></p>
-        <div class="appointment-calendar">
-          <div class="appointment-calendar-head">
-            <button type="button" id="appointment-prev" aria-label="Día laborable anterior">&#8249;</button>
-            <div><strong id="appointment-day"></strong><input id="appointment-date" type="date" aria-label="Elegir fecha"></div>
-            <button type="button" id="appointment-next" aria-label="Día laborable siguiente">&#8250;</button>
-          </div>
-          <div id="appointment-agenda" class="appointment-agenda" role="group" aria-label="Franjas de media hora"></div>
-          <p id="appointment-selection" class="appointment-calendar-selection" aria-live="polite">Selecciona una franja</p>
+  document.querySelectorAll('header .whatsapp-button, header .cta').forEach(a => {
+    a.textContent='PEDIR CITA';a.href='/citas.html';a.removeAttribute('target');a.setAttribute('aria-label','Pedir cita');
+  });
+  document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
+  const root=document.getElementById('appointment-page');if(!root)return;
+  root.innerHTML=`
+    <p class="demo-note">Vista previa · No se realizan reservas ni cobros.</p>
+    <ol class="booking-progress" aria-label="Progreso"><li>1. Servicio</li><li>2. Hora</li><li>3. Detalles</li><li>4. Finalizar</li></ol>
+    <form id="booking-form" novalidate>
+      <section data-step="0"><h2>Elige tu consulta</h2>
+        <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 60,50 €</option><option value="visit">Presencial · 84,70 €</option></select></div>
+        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option></select></div></div>
+        <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>Lunes a viernes · Horario de España peninsular</p>
+      </section>
+      <section data-step="1" hidden><h2>Elige día y hora</h2><p id="booking-professional"></p>
+        <div class="calendar-navigation"><button type="button" id="booking-prev" aria-label="Semana anterior">&#8249;</button><label>Desde<input type="date" id="booking-date" aria-label="Fecha inicial de la agenda"></label><button type="button" id="booking-next" aria-label="Semana siguiente">&#8250;</button></div>
+        <div id="booking-calendar" class="booking-calendar" aria-label="Agenda de citas"></div><p id="booking-selection" aria-live="polite"></p>
+      </section>
+      <section data-step="2" hidden><p id="booking-chosen"></p>
+        <div class="contact-fields"><div><label for="booking-name">Nombre completo</label><input id="booking-name" autocomplete="name" required maxlength="100"></div><div><label for="booking-phone">Teléfono</label><input id="booking-phone" type="tel" autocomplete="tel" required maxlength="30" placeholder="+34 612 34 56 78"></div><div><label for="booking-email">Email</label><input id="booking-email" type="email" autocomplete="email" required maxlength="254"></div></div>
+        <label for="booking-vehicle">Marca y modelo del vehículo</label><input id="booking-vehicle" required maxlength="150">
+        <label for="booking-plate">Matrícula</label><input id="booking-plate" required maxlength="20">
+        <label for="booking-dni">DNI / NIE (opcional)</label><input id="booking-dni" maxlength="30" autocomplete="off">
+        <label for="booking-details">¿Qué vamos a comprobar?</label><textarea id="booking-details" required maxlength="1500"></textarea>
+      </section>
+      <section data-step="3" hidden><h2>Carrito</h2><div class="cart-layout">
+        <div><div class="cart-heading"><span>PRODUCTO</span><span>TOTAL</span></div>
+          <div class="cart-item"><img src="/assets/favicon-factor-lambda.png" alt="Factor Lambda" width="80" height="80"><div><h3 id="booking-product"></h3><p id="booking-summary" class="booking-summary"></p><p>Cantidad: 1 cita</p><button type="button" id="booking-edit" class="text-action">Editar cita</button> <button type="button" id="booking-remove" class="text-action">Eliminar</button></div><strong id="booking-item-price"></strong></div>
         </div>
-        <input id="appointment-time" type="hidden">
-        <p class="appointment-note">Horario de España peninsular. Solicitud sujeta a disponibilidad y confirmación del taller.</p>
-      </div>
-      <p id="appointment-visit" hidden>Solicita tu cita presencial y acordaremos contigo el día y la hora.</p>
-      <label for="appointment-name">Nombre</label><input id="appointment-name" autocomplete="name" required maxlength="100">
-      <label for="appointment-phone">Tu teléfono de contacto</label><input id="appointment-phone" type="tel" autocomplete="tel" required maxlength="30">
-      <label for="appointment-email">Email de confirmación</label><input id="appointment-email" type="email" autocomplete="email" required maxlength="254">
-      <button type="submit">CONTINUAR AL RESUMEN</button>
-    </form>
-    <section id="appointment-review" hidden aria-live="polite">
-      <h3>Resumen de tu cita</h3>
-      <p id="appointment-summary" style="white-space:pre-line"></p>
-      <p class="appointment-price" id="appointment-total"></p>
-      <p>Tarjeta Visa / Mastercard · Apple Pay · Google Pay</p>
-      <button type="button" disabled style="width:100%;padding:14px;border:1px solid #666;background:#333;color:#bbb;border-radius:4px">PAGO PRÓXIMAMENTE</button>
-      <p class="appointment-note">Pago pendiente de activación. Las citas se confirmarán tras verificar el pago y la disponibilidad. No se han guardado ni enviado tus datos.</p>
-      <button type="button" id="appointment-back" style="padding:12px;background:transparent;border:1px solid #777;color:white;cursor:pointer">Volver a los datos</button>
-    </section>`;
-  document.body.append(dialog);
-  const get = id => dialog.querySelector('#appointment-' + id);
-  const mode = get('mode'), topic = get('topic'), date = get('date'), time = get('time');
-  const madridNow = () => new Intl.DateTimeFormat('sv-SE', { timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23' }).format(new Date());
-  function slots() {
-    const now = madridNow();
-    date.min = now.slice(0,10);
-    time.value = '';
-    get('agenda').replaceChildren();
-    get('selection').textContent = 'Selecciona una franja';
-    get('prev').disabled = date.value <= date.min;
-    get('day').textContent = date.value ? new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long'}).format(new Date(date.value + 'T12:00:00')) : 'Elige una fecha';
-    const weekday = date.value ? new Date(date.value + 'T12:00:00').getDay() : null;
-    date.setCustomValidity(weekday === 0 || weekday === 6 ? 'Atendemos de lunes a viernes. Selecciona otro día.' : '');
-    if(weekday === 0 || weekday === 6 || !date.value || date.value < date.min) {
-      get('selection').textContent = 'Selecciona una fecha laborable a partir de hoy';
-      return;
+        <aside class="cart-totals"><h3>TOTALES DEL CARRITO</h3><div class="cart-heading"><strong>Total</strong><strong id="booking-total"></strong></div><p>IVA incluido</p>
+          <div class="payment-preview" aria-label="Métodos de pago pendientes de activación"><button type="button" disabled>Apple Pay</button><button type="button" disabled>Google Pay</button><button type="button" disabled>Visa / Mastercard</button></div>
+          <p class="demo-note">Pago pendiente de activación</p><button type="button" class="booking-pay" disabled>FINALIZAR COMPRA</button><p class="demo-note">No se ha reservado ninguna hora ni enviado ningún correo. Tus datos no se guardan en esta demostración.</p>
+        </aside></div>
+      </section>
+      <p id="booking-error" role="alert"></p><div class="booking-navigation"><button type="button" id="booking-back">ATRÁS</button><button type="submit" id="booking-forward">SIGUIENTE &#8594;</button></div>
+    </form>`;
+  const get=id=>document.getElementById('booking-'+id),sections=[...root.querySelectorAll('[data-step]')],progress=[...root.querySelectorAll('.booking-progress li')];
+  const now=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
+  let step=0,selected=null;
+  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='mechanics'?'Germán · Mecánica':'Joaquín · Reprogramaciones',amount=()=>phone()?'60,50 €':'84,70 €';
+  function show(value){
+    step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
+    get('back').hidden=step===0;get('forward').hidden=step===3;get('error').textContent='';
+    const appointment=()=>phone()?format(selected.date)+' a las '+selected.time+' · 30 minutos':'Presencial · Fecha y hora por acordar con el taller';
+    if(step===1)calendar();
+    if(step===2)get('chosen').textContent='Tu consulta: '+person()+' · '+appointment()+' · '+amount()+' IVA incluido';
+    if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
+    root.scrollIntoView({block:'start',behavior:'smooth'});
+  }
+  function update(){selected=null;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
+  function calendar(){
+    const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
+    get('professional').textContent=person()+' · '+(get('topic').value==='mechanics'?'08:00–15:30':'08:00–16:00');
+    const grid=get('calendar');grid.replaceChildren();const day=new Date(get('date').value+'T12:00:00');
+    for(let count=0;count<5;){
+      if([0,6].includes(day.getDay())){day.setDate(day.getDate()+1);continue;}
+      const date=iso(day),column=document.createElement('div'),heading=document.createElement('h3');column.className='calendar-day';heading.textContent=new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short'}).format(day);column.append(heading);
+      const end=get('topic').value==='mechanics'?930:960;
+      for(let m=480;m+30<=end;m+=30){
+        const time=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),label=document.createElement('label'),radio=document.createElement('input');
+        label.className='calendar-slot';radio.type='radio';radio.name='slot';radio.value=date+' '+time;radio.disabled=date+' '+time<=current;radio.checked=!!selected&&selected.date===date&&selected.time===time;radio.setAttribute('aria-label',format(date)+' a las '+time);
+        radio.onchange=()=>{selected={date,time};get('selection').textContent=format(date)+' · '+time+' · 30 minutos';get('error').textContent='';};label.append(radio,document.createTextNode(time));column.append(label);
+      }
+      grid.append(column);day.setDate(day.getDate()+1);count++;
     }
-    const end = topic.value === 'mechanics' ? 930 : 960;
-    for(let minutes=480; minutes+30<=end; minutes+=30) {
-      const start = String(Math.floor(minutes/60)).padStart(2,'0') + ':' + String(minutes%60).padStart(2,'0');
-      const finish = String(Math.floor((minutes+30)/60)).padStart(2,'0') + ':' + String((minutes+30)%60).padStart(2,'0');
-      if(date.value === now.slice(0,10) && start <= now.slice(11,16)) continue;
-      const row = document.createElement('label');
-      row.className = 'appointment-slot';
-      const hour = document.createElement('time');
-      hour.textContent = start;
-      const space = document.createElement('span');
-      const radio = document.createElement('input');
-      radio.type = 'radio'; radio.name = 'appointment-slot'; radio.value = start;
-      radio.required = mode.value === 'phone'; radio.disabled = mode.value !== 'phone';
-      radio.setAttribute('aria-label', start + ' a ' + finish);
-      radio.addEventListener('change', () => {
-        time.value = start;
-        get('selection').textContent = start + ' – ' + finish + ' · 30 minutos';
-      });
-      space.append(radio, document.createTextNode(start + ' – ' + finish));
-      row.append(hour, space); get('agenda').append(row);
-    }
-    if(!get('agenda').children.length) get('selection').textContent = 'No quedan franjas para este día. Elige otro día.';
+    get('selection').textContent=selected?format(selected.date)+' · '+selected.time:'Selecciona una franja de media hora. Horarios de demostración.';
   }
-  function update() {
-    const phone = mode.value === 'phone';
-    get('price').textContent = phone ? '60,50 € IVA incluido · 30 minutos' : '84,70 € IVA incluido';
-    get('description').textContent = phone ? 'Media hora de consulta telefónica para resolver dudas y valorar posibles diagnósticos.' : 'Consulta presencial en nuestras instalaciones.';
-    get('schedule').hidden = !phone || !topic.value;
-    get('visit').hidden = phone;
-    date.required = time.required = phone && !!topic.value;
-    date.disabled = time.disabled = !phone || !topic.value;
-    get('professional').textContent = topic.value === 'mechanics' ? 'Germán · Mecánica · Lunes a viernes · 08:00–15:30' : 'Joaquín · Reprogramaciones · Lunes a viernes · 08:00–16:00';
-    slots();
-  }
-  mode.addEventListener('change',update); topic.addEventListener('change',update); date.addEventListener('change',slots);
-  function moveDay(direction) {
-    const next = new Date((date.value || madridNow().slice(0,10)) + 'T12:00:00');
-    do { next.setDate(next.getDate()+direction); } while(next.getDay() === 0 || next.getDay() === 6);
-    const value = next.getFullYear() + '-' + String(next.getMonth()+1).padStart(2,'0') + '-' + String(next.getDate()).padStart(2,'0');
-    if(value < madridNow().slice(0,10)) return;
-    date.value = value; slots();
-  }
-  get('prev').onclick = () => moveDay(-1);
-  get('next').onclick = () => moveDay(1);
-  date.value = madridNow().slice(0,10);
-  if([0,6].includes(new Date(date.value+'T12:00:00').getDay())) moveDay(1);
-  dialog.querySelector('.appointment-close').onclick = () => dialog.close();
-  document.querySelectorAll('header .whatsapp-button, header .cta').forEach(link => {
-    link.textContent = 'PEDIR CITA'; link.href = '#pedir-cita'; link.removeAttribute('target'); link.setAttribute('aria-label','Pedir cita');
-    link.addEventListener('click',e => {e.preventDefault(); update(); dialog.showModal();});
-  });
-  document.querySelectorAll('.topbar .phone').forEach(item => item.remove());
-  dialog.querySelector('form').addEventListener('submit', event => {
-    event.preventDefault();
-    if(mode.value === 'phone' && !time.value) { get('selection').textContent = 'Selecciona una franja para continuar'; get('agenda').scrollIntoView({block:'center'}); return; }
-    if(mode.value === 'phone' && (date.value < madridNow().slice(0,10) || (date.value === madridNow().slice(0,10) && time.value <= madridNow().slice(11,16)))) { slots(); date.reportValidity(); return; }
-    const professional = topic.value === 'mechanics' ? 'Germán (mecánica)' : 'Joaquín (reprogramaciones)';
-    get('summary').textContent = [mode.value === 'phone' ? 'Consulta telefónica · 30 minutos' : 'Consulta presencial',professional,mode.value === 'phone' ? 'Fecha: ' + date.value + ' a las ' + time.value + ' (España peninsular)' : 'Fecha y hora por acordar con el taller','Motivo: ' + get('details').value,'Nombre: ' + get('name').value,'Teléfono: ' + get('phone').value,'Email: ' + get('email').value].join('\n');
-    get('total').textContent = 'Total: ' + (mode.value === 'phone' ? '60,50 €' : '84,70 €') + ' · IVA incluido';
-    dialog.querySelector('form').hidden = true;
-    get('review').hidden = false;
-    dialog.scrollTop = 0;
-    get('back').focus();
-  });
-  get('back').onclick = () => {
-    get('review').hidden = true;
-    dialog.querySelector('form').hidden = false;
-    mode.focus();
-  };
-  update();
+  get('date').value=now().slice(0,10);get('date').onchange=()=>{if(!get('date').value||get('date').value<now().slice(0,10))get('date').value=now().slice(0,10);calendar();};
+  function move(direction){const day=new Date(get('date').value+'T12:00:00');day.setDate(day.getDate()+direction*7);get('date').value=iso(day)<now().slice(0,10)?now().slice(0,10):iso(day);calendar();}
+  get('prev').onclick=()=>move(-1);get('next').onclick=()=>move(1);get('mode').onchange=update;get('topic').onchange=update;
+  get('back').onclick=()=>show(step===2&&!phone()?0:step-1);get('edit').onclick=()=>show(0);
+  get('remove').onclick=()=>{get('form').reset();selected=null;get('date').value=now().slice(0,10);get('summary').textContent='';update();show(0);};
+  get('form').onsubmit=e=>{e.preventDefault();if(step===0){if(!get('topic').reportValidity())return;show(phone()?1:2);}else if(step===1){if(!selected){get('error').textContent='Selecciona un día y una hora.';return;}if(selected.date+' '+selected.time<=now()){selected=null;calendar();get('error').textContent='Esa hora ya ha pasado. Selecciona otra franja.';return;}show(2);}else if(step===2){for(const input of sections[2].querySelectorAll('input,textarea'))if(!input.reportValidity())return;show(3);}};
+  update();show(0);
 })();
