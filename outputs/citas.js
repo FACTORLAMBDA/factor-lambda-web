@@ -16,9 +16,9 @@
     <ol class="booking-progress" aria-label="Progreso"><li>1. Servicio</li><li>2. Hora</li><li>3. Detalles</li><li>4. Finalizar</li></ol>
     <form id="booking-form" novalidate>
       <section data-step="0"><h2>Elige tu consulta</h2>
-        <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 60,50 €</option><option value="visit">Presencial · 84,70 €</option></select></div>
+        <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 40 € IVA incluido</option><option value="visit">Presencial · 45 € IVA incluido</option></select></div>
         <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option></select></div></div>
-        <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>Lunes a viernes · Horario de España peninsular</p>
+        <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p><p>Lunes a viernes · Horario de España peninsular</p>
       </section>
       <section data-step="1" hidden><h2>Elige día y hora</h2><p id="booking-professional"></p>
         <div class="calendar-navigation"><button type="button" id="booking-prev" aria-label="Semana anterior">&#8249;</button><label>Desde<input type="date" id="booking-date" aria-label="Fecha inicial de la agenda"></label><button type="button" id="booking-next" aria-label="Semana siguiente">&#8250;</button></div>
@@ -37,6 +37,7 @@
         </div>
         <aside class="cart-totals"><h3>TOTALES DEL CARRITO</h3><div class="cart-heading"><strong>Total</strong><strong id="booking-total"></strong></div><p>IVA incluido</p>
           <div class="booking-conditions"><h3>Confirmación y condiciones de la cita</h3>
+            <p>El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p>
             <p>Tras verificar el pago y confirmar la reserva, recibirás un correo en la dirección que has indicado con el justificante de pago y los detalles de tu cita.</p>
             <p>Para modificar o anular tu cita, escribe a <a href="mailto:flgarage@factorlambda.com">flgarage@factorlambda.com</a> indicando tus datos, la fecha de la cita y explicando la situación.</p>
             <p>En caso de anulación sin justificación, inasistencia o falta de respuesta del cliente a la hora acordada sin justificación, no se devolverá el importe abonado, sin perjuicio de los derechos que legalmente correspondan.</p>
@@ -53,7 +54,7 @@
   const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
   let step=0,selected=null;
-  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='mechanics'?'Germán · Mecánica':'Joaquín · Reprogramaciones',amount=()=>phone()?'60,50 €':'84,70 €';
+  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='mechanics'?'Germán · Mecánica':'Joaquín · Reprogramaciones',amount=()=>phone()?'40 €':'45 €';
   function show(value){
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
     get('back').hidden=step===0;get('forward').hidden=step===3;get('error').textContent='';
