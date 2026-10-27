@@ -1,5 +1,12 @@
 (() => {
+  const headerStyle=document.createElement('style');
+  headerStyle.textContent=`
+    header .booking-header-button{display:inline-flex;align-items:center;justify-content:center;align-self:center;justify-self:center;width:156px;min-width:156px;height:48px;min-height:48px;padding:2px 20px 0;border-radius:5px;font-family:'Teko','Arial Narrow',Arial,sans-serif;font-size:24px;line-height:1;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:0;box-sizing:border-box}
+    @media(max-width:1050px){header .booking-header-button{align-self:center;margin:4px auto;width:160px;min-width:160px}}
+  `;
+  document.head.append(headerStyle);
   document.querySelectorAll('header .whatsapp-button, header .cta').forEach(a => {
+    a.classList.add('booking-header-button');
     a.textContent='PEDIR CITA';a.href='/citas.html';a.removeAttribute('target');a.setAttribute('aria-label','Pedir cita');
   });
   document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
@@ -29,6 +36,12 @@
           <div class="cart-item"><img src="/assets/favicon-factor-lambda.png" alt="Factor Lambda" width="80" height="80"><div><h3 id="booking-product"></h3><p id="booking-summary" class="booking-summary"></p><p>Cantidad: 1 cita</p><button type="button" id="booking-edit" class="text-action">Editar cita</button> <button type="button" id="booking-remove" class="text-action">Eliminar</button></div><strong id="booking-item-price"></strong></div>
         </div>
         <aside class="cart-totals"><h3>TOTALES DEL CARRITO</h3><div class="cart-heading"><strong>Total</strong><strong id="booking-total"></strong></div><p>IVA incluido</p>
+          <div class="booking-conditions"><h3>Confirmación y condiciones de la cita</h3>
+            <p>Tras verificar el pago y confirmar la reserva, recibirás un correo en la dirección que has indicado con el justificante de pago y los detalles de tu cita.</p>
+            <p>Para modificar o anular tu cita, escribe a <a href="mailto:flgarage@factorlambda.com">flgarage@factorlambda.com</a> indicando tus datos, la fecha de la cita y explicando la situación.</p>
+            <p>En caso de anulación sin justificación, inasistencia o falta de respuesta del cliente a la hora acordada sin justificación, no se devolverá el importe abonado, sin perjuicio de los derechos que legalmente correspondan.</p>
+            <label class="booking-consent"><input type="checkbox" id="booking-consent" required><span>He leído y acepto las condiciones de modificación, anulación y no devolución indicadas.</span></label>
+          </div>
           <div class="payment-preview" aria-label="Métodos de pago pendientes de activación"><button type="button" disabled>Apple Pay</button><button type="button" disabled>Google Pay</button><button type="button" disabled>Visa / Mastercard</button></div>
           <p class="demo-note">Pago pendiente de activación</p><button type="button" class="booking-pay" disabled>FINALIZAR COMPRA</button><p class="demo-note">No se ha reservado ninguna hora ni enviado ningún correo. Tus datos no se guardan en esta demostración.</p>
         </aside></div>
@@ -50,7 +63,7 @@
     if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
     root.scrollIntoView({block:'start',behavior:'smooth'});
   }
-  function update(){selected=null;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
+  function update(){selected=null;get('consent').checked=false;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
     get('professional').textContent=person()+' · '+(get('topic').value==='mechanics'?'08:00–15:30':'08:00–16:00');
