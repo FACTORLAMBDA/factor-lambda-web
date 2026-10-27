@@ -17,7 +17,7 @@
     <form id="booking-form" novalidate>
       <section data-step="0"><h2>Elige tu consulta</h2>
         <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 40 € IVA incluido</option><option value="visit">Presencial · 45 € IVA incluido</option></select></div>
-        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option></select></div></div>
+        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online</option><option value="quick-mechanics">Mecánica rápida</option></select></div></div>
         <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p><p>Lunes a viernes · Horario de España peninsular</p>
       </section>
       <section data-step="1" hidden><h2>Elige día y hora</h2><p id="booking-professional"></p>
@@ -54,25 +54,26 @@
   const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
   let step=0,selected=null;
-  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='mechanics'?'Germán · Mecánica':'Joaquín · Reprogramaciones',amount=()=>phone()?'40 €':'45 €';
+  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='tuning'?'Joaquín · Reprogramaciones':'Germán · Mecánica',amount=()=>phone()?'40 €':'45 €';
+  const reason=()=>get('topic').selectedOptions[0].textContent;
   function show(value){
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
     get('back').hidden=step===0;get('forward').hidden=step===3;get('error').textContent='';
     const appointment=()=>phone()?format(selected.date)+' a las '+selected.time+' · 30 minutos':'Presencial · Fecha y hora por acordar con el taller';
     if(step===1)calendar();
     if(step===2)get('chosen').textContent='Tu consulta: '+person()+' · '+appointment()+' · '+amount()+' IVA incluido';
-    if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
+    if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Motivo: '+reason(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
     root.scrollIntoView({block:'start',behavior:'smooth'});
   }
   function update(){selected=null;get('consent').checked=false;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
-    get('professional').textContent=person()+' · '+(get('topic').value==='mechanics'?'08:00–15:30':'08:00–16:00');
+    get('professional').textContent=reason()+' · '+person()+' · '+(get('topic').value==='tuning'?'08:00–16:00':'08:00–15:30');
     const grid=get('calendar');grid.replaceChildren();const day=new Date(get('date').value+'T12:00:00');
     for(let count=0;count<5;){
       if([0,6].includes(day.getDay())){day.setDate(day.getDate()+1);continue;}
       const date=iso(day),column=document.createElement('div'),heading=document.createElement('h3');column.className='calendar-day';heading.textContent=new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short'}).format(day);column.append(heading);
-      const end=get('topic').value==='mechanics'?930:960;
+      const end=get('topic').value==='tuning'?960:930;
       for(let m=480;m+30<=end;m+=30){
         const time=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),label=document.createElement('label'),radio=document.createElement('input');
         label.className='calendar-slot';radio.type='radio';radio.name='slot';radio.value=date+' '+time;radio.disabled=date+' '+time<=current;radio.checked=!!selected&&selected.date===date&&selected.time===time;radio.setAttribute('aria-label',format(date)+' a las '+time);
