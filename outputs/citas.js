@@ -16,8 +16,6 @@
     a.textContent='PEDIR CITA';a.href='/citas.html';a.removeAttribute('target');a.setAttribute('aria-label','Pedir cita');
   });
   document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
-  const mainNav=document.querySelector('header nav');
-  if(mainNav&&!mainNav.querySelector('a[href="/personaliza.html"]')){const link=document.createElement('a');link.href='/personaliza.html';link.textContent='Personaliza tu coche';mainNav.append(link);}
   const root=document.getElementById('appointment-page');if(!root)return;
   root.innerHTML=`
     <p class="demo-note">Vista previa · No se realizan reservas ni cobros.</p>

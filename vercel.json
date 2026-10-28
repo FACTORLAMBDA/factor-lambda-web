@@ -24,8 +24,9 @@
       "dest": "/api/instagram-feed.js"
     },
     {
-      "src": "/api/car-studio",
-      "dest": "/api/car-studio.js"
+      "src": "/personaliza.html",
+      "status": 302,
+      "headers": { "Location": "/" }
     },
     {
       "src": "/assets/(.*)",
