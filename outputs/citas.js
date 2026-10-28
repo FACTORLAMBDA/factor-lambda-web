@@ -55,7 +55,8 @@
   const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
   let step=0,selected=null;
-  const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='tuning'?'Joaquín · Reprogramaciones':'Germán · Mecánica',amount=()=>phone()?'40 €':'45 €';
+  const joaquin=()=>['tuning','exhausts'].includes(get('topic').value);
+  const phone=()=>get('mode').value==='phone',person=()=>joaquin()?(get('topic').value==='exhausts'?'Joaquín · Escapes':'Joaquín · Reprogramaciones'):'Germán · Mecánica',amount=()=>phone()?'40 €':'45 €';
   const reason=()=>get('topic').selectedOptions[0].textContent+(get('topic').value==='other-help'?' · '+get('other').value:'');
   function show(value){
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
@@ -69,12 +70,12 @@
   function update(){selected=null;get('consent').checked=false;const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
-    get('professional').textContent=reason()+' · '+person()+' · '+(get('topic').value==='tuning'?'08:00–16:00':'08:00–15:30');
+    get('professional').textContent=reason()+' · '+person()+' · '+(joaquin()?'08:00–16:00':'08:00–15:30');
     const grid=get('calendar');grid.replaceChildren();const day=new Date(get('date').value+'T12:00:00');
     for(let count=0;count<5;){
       if([0,6].includes(day.getDay())){day.setDate(day.getDate()+1);continue;}
       const date=iso(day),column=document.createElement('div'),heading=document.createElement('h3');column.className='calendar-day';heading.textContent=new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short'}).format(day);column.append(heading);
-      const end=get('topic').value==='tuning'?960:930;
+      const end=joaquin()?960:930;
       for(let m=480;m+30<=end;m+=30){
         const time=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),label=document.createElement('label'),radio=document.createElement('input');
         label.className='calendar-slot';radio.type='radio';radio.name='slot';radio.value=date+' '+time;radio.disabled=date+' '+time<=current;radio.checked=!!selected&&selected.date===date&&selected.time===time;radio.setAttribute('aria-label',format(date)+' a las '+time);
