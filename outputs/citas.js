@@ -8,7 +8,7 @@
   `;
   document.head.append(headerStyle);
   document.querySelectorAll('.floating-whatsapp .whatsapp-logo').forEach(icon=>{
-    const img=document.createElement('img');img.src='/assets/whatsapp-logo-cliente.png';img.alt='';
+    const img=document.createElement('img');img.src='/assets/whatsapp-logo-transparente.png';img.alt='';
     img.width=30;img.height=28;img.style.cssText='width:30px;height:28px;object-fit:contain;display:block;flex:0 0 auto;border-radius:4px';icon.replaceWith(img);
   });
   document.querySelectorAll('header .whatsapp-button, header .cta').forEach(a => {
