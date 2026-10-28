@@ -2,6 +2,7 @@ const http = require("node:http");
 const path = require("node:path");
 const fs = require("node:fs");
 const instagramFeed = require("./api/instagram-feed");
+const carStudio = require("./api/car-studio");
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "outputs");
@@ -14,6 +15,8 @@ const MIME_TYPES = {
   ".jpeg": "image/jpeg",
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
+  ".json": "application/json; charset=utf-8",
+  ".glb": "model/gltf-binary",
 };
 
 function sendJson(res, statusCode, payload) {
@@ -60,6 +63,10 @@ function serveStatic(req, res) {
 const server = http.createServer((req, res) => {
   if (req.url.startsWith("/api/instagram-feed")) {
     instagramFeed(req, createApiResponse(res));
+    return;
+  }
+  if (new URL(req.url, 'http://localhost').pathname === '/api/car-studio') {
+    carStudio(req, createApiResponse(res));
     return;
   }
 

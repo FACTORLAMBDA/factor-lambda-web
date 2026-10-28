@@ -1,15 +1,23 @@
 (() => {
+  if(!document.querySelector('script[data-fl-agent]')){const agent=document.createElement('script');agent.src='/fl-agent.js';agent.dataset.flAgent='true';document.head.append(agent);}
   const headerStyle=document.createElement('style');
   headerStyle.textContent=`
+    header nav{flex-wrap:wrap;row-gap:0}
     header .booking-header-button{display:inline-flex;align-items:center;justify-content:center;align-self:center;justify-self:center;width:156px;min-width:156px;height:48px;min-height:48px;padding:2px 20px 0;border-radius:5px;font-family:'Teko','Arial Narrow',Arial,sans-serif;font-size:24px;line-height:1;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:0;box-sizing:border-box}
     @media(max-width:1050px){header .booking-header-button{align-self:center;margin:4px auto;width:160px;min-width:160px}}
   `;
   document.head.append(headerStyle);
+  document.querySelectorAll('.floating-whatsapp .whatsapp-logo').forEach(icon=>{
+    const img=document.createElement('img');img.src='/assets/whatsapp-logo-cliente.png';img.alt='';
+    img.width=30;img.height=28;img.style.cssText='width:30px;height:28px;object-fit:contain;display:block;flex:0 0 auto;border-radius:4px';icon.replaceWith(img);
+  });
   document.querySelectorAll('header .whatsapp-button, header .cta').forEach(a => {
     a.classList.add('booking-header-button');
     a.textContent='PEDIR CITA';a.href='/citas.html';a.removeAttribute('target');a.setAttribute('aria-label','Pedir cita');
   });
   document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
+  const mainNav=document.querySelector('header nav');
+  if(mainNav&&!mainNav.querySelector('a[href="/personaliza.html"]')){const link=document.createElement('a');link.href='/personaliza.html';link.textContent='Personaliza tu coche';mainNav.append(link);}
   const root=document.getElementById('appointment-page');if(!root)return;
   root.innerHTML=`
     <p class="demo-note">Vista previa · No se realizan reservas ni cobros.</p>
@@ -17,7 +25,7 @@
     <form id="booking-form" novalidate>
       <section data-step="0"><h2>Elige tu consulta</h2>
         <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 40 € IVA incluido</option><option value="visit">Presencial · 45 € IVA incluido</option></select></div>
-        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online</option><option value="quick-mechanics">Mecánica rápida</option><option value="exhausts">Escapes</option><option value="other-help">Otra ayuda</option></select>
+        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online · 30 € IVA incluido</option><option value="quick-mechanics">Mecánica rápida</option><option value="exhausts">Escapes</option><option value="other-help">Otra ayuda</option></select>
         <div id="booking-other-wrap" hidden><label for="booking-other">¿Qué necesitas?</label><textarea id="booking-other" maxlength="1500" placeholder="Cuéntanos qué ayuda necesitas" disabled></textarea></div></div></div>
         <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p><p>Lunes a viernes · Horario de España peninsular</p>
       </section>
@@ -56,7 +64,7 @@
   const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
   let step=0,selected=null;
   const joaquin=()=>['tuning','exhausts'].includes(get('topic').value);
-  const phone=()=>get('mode').value==='phone',person=()=>joaquin()?(get('topic').value==='exhausts'?'Joaquín · Escapes':'Joaquín · Reprogramaciones'):'Germán · Mecánica',amount=()=>phone()?'40 €':'45 €';
+  const phone=()=>get('mode').value==='phone',person=()=>joaquin()?(get('topic').value==='exhausts'?'Joaquín · Escapes':'Joaquín · Reprogramaciones'):'Germán · Mecánica',amount=()=>get('topic').value==='online-quote'?'30 €':phone()?'40 €':'45 €';
   const reason=()=>get('topic').selectedOptions[0].textContent+(get('topic').value==='other-help'?' · '+get('other').value:'');
   function show(value){
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
@@ -67,7 +75,7 @@
     if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Motivo: '+reason(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
     root.scrollIntoView({block:'start',behavior:'smooth'});
   }
-  function update(){selected=null;get('consent').checked=false;const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
+  function update(){selected=null;get('consent').checked=false;const quote=get('topic').value==='online-quote';get('mode').options[0].textContent='Telefónica · '+(quote?'30':'40')+' € IVA incluido';get('mode').options[1].textContent='Presencial · '+(quote?'30':'45')+' € IVA incluido';const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
     get('professional').textContent=reason()+' · '+person()+' · '+(joaquin()?'08:00–16:00':'08:00–15:30');

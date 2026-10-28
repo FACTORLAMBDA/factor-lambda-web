@@ -1,0 +1,10 @@
+Car Concept
+Model and textures: Eric Chadwick / Darmstadt Graphics Group GmbH, 2024.
+License: Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+Source: https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept
+GLB: https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CarConcept/glTF-Binary/CarConcept.glb
+
+The GLB is distributed unmodified. The viewer normalizes its displayed scale and
+allows the user to change its displayed appearance. Original Khronos trademarks
+and 3D Commerce logos remain the property of their respective holders.

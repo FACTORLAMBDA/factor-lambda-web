@@ -24,6 +24,10 @@
       "dest": "/api/instagram-feed.js"
     },
     {
+      "src": "/api/car-studio",
+      "dest": "/api/car-studio.js"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/outputs/assets/$1"
     },

@@ -1,0 +1,43 @@
+{
+  "currency": "EUR",
+  "taxIncluded": true,
+  "services": [
+    { "id": "coolant", "name": "Cambio de refrigerante G13 a G12 EVO", "price": 230, "keywords": ["refrigerante", "g12", "g13", "anticongelante"], "conditions": "Tarifa con IVA incluido. Confirma vehículo con el taller." },
+    { "id": "rbf600", "name": "Cambio líquido de frenos Motul RBF600", "price": 90, "priceType": "from", "keywords": ["liquido de frenos", "rbf600"], "conditions": "Precio desde, con IVA incluido. El total se concreta según vehículo y trabajo." },
+    { "id": "rbf660", "name": "Cambio líquido de frenos Motul RBF660", "price": 94.17, "priceType": "from", "keywords": ["liquido de frenos", "rbf660"], "conditions": "Precio desde, con IVA incluido. El total se concreta según vehículo y trabajo." },
+    { "id": "rbf700", "name": "Cambio líquido de frenos Motul RBF700", "price": 98.74, "priceType": "from", "keywords": ["liquido de frenos", "rbf700"], "conditions": "Precio desde, con IVA incluido. El total se concreta según vehículo y trabajo." },
+    { "id": "brake-fluid-client", "name": "Cambio líquido de frenos aportado por el cliente", "price": 105, "priceType": "from", "keywords": ["liquido de frenos", "liquido cliente"], "conditions": "Precio desde, IVA incluido. La tabla indica 2 horas; confirmar alcance con el taller." },
+    { "id": "hoses600", "name": "Cambio de latiguillos metálicos + líquido RBF600", "price": 180, "priceType": "from", "keywords": ["latiguillos", "rbf600"], "conditions": "IVA incluido. Latiguillos aparte: no es el total final con las piezas." },
+    { "id": "hoses660", "name": "Cambio de latiguillos metálicos + líquido RBF660", "price": 188.34, "priceType": "from", "keywords": ["latiguillos", "rbf660"], "conditions": "IVA incluido. Latiguillos aparte: no es el total final con las piezas." },
+    { "id": "hoses700", "name": "Cambio de latiguillos metálicos + líquido RBF700", "price": 197.48, "priceType": "from", "keywords": ["latiguillos", "rbf700"], "conditions": "IVA incluido. Latiguillos aparte: no es el total final con las piezas." },
+    { "id": "hoses-client", "name": "Cambio de latiguillos metálicos + líquido aportado por el cliente", "price": 210, "keywords": ["latiguillos", "liquido cliente"], "conditions": "IVA incluido. La tabla indica 3 horas. Confirma las piezas y el alcance con el taller." },
+    { "id": "coilover", "name": "Montaje de suspensión roscada", "price": 280, "priceType": "from", "keywords": ["suspension roscada", "roscadas"], "conditions": "Precio desde, IVA incluido. Confirma vehículo, piezas y alcance con el taller." },
+    { "id": "oil-motul", "name": "Mantenimiento completo de aceite Motul", "price": 265, "clubPrice": 230, "keywords": ["motul", "aceite", "mantenimiento motor", "cambio de aceite"], "conditions": "Tarifa PVP con IVA. Tarifa clubs: 230 € con IVA, sujeta a acreditar las condiciones del club. Confirma modelo y motor con el taller." },
+    { "id": "oil-ravenol", "name": "Mantenimiento completo de aceite Ravenol", "price": 285, "clubPrice": 246, "keywords": ["ravenol", "aceite", "mantenimiento motor", "cambio de aceite"], "conditions": "Tarifa PVP con IVA. Tarifa clubs: 246 € con IVA, sujeta a acreditar las condiciones del club. Confirma modelo y motor con el taller." },
+    { "id": "dq381-warranty", "name": "DSG 7 DQ381 · Motul DCTF · Coches con garantía", "price": 400, "clubPrice": 375, "keywords": ["dsg", "dq381", "transmision", "caja de cambios"], "conditions": "Solo esta configuración de caja y aceite, para coches con garantía. Clubs: 375 € con IVA, sujeto a acreditación." },
+    { "id": "dq381-motul", "name": "DSG 7 DQ381 · Motul DCTF", "price": 385, "clubPrice": 350, "keywords": ["dsg", "dq381", "transmision", "caja de cambios"], "conditions": "Confirma caja y situación de garantía con el taller. Clubs: 350 € con IVA, sujeto a acreditación." },
+    { "id": "dq250", "name": "DSG 6 DQ250 · Motul DCTF", "price": 350, "clubPrice": 320, "keywords": ["dsg", "dq250", "transmision", "caja de cambios"], "conditions": "Solo para esta configuración. Clubs: 320 € con IVA, sujeto a acreditación." },
+    { "id": "dq200", "name": "DSG 7 DQ200 · OEM VW", "price": 280, "clubPrice": 230, "keywords": ["dsg", "dq200", "transmision", "caja de cambios"], "conditions": "Solo para esta configuración. Clubs: 230 € con IVA, sujeto a acreditación." },
+    { "id": "manual", "name": "Valvulina de cambio manual", "price": 200, "clubPrice": 180, "keywords": ["cambio manual", "valvulina", "caja manual"], "conditions": "Clubs: 180 € con IVA, sujeto a acreditación. Confirma vehículo con el taller." },
+    { "id": "haldex", "name": "Sistema Haldex 4Drive · Valvulina OEM VW", "price": 190, "clubPrice": 175, "keywords": ["haldex", "4drive", "valvulina"], "conditions": "Clubs: 175 € con IVA, sujeto a acreditación. Confirma compatibilidad con el taller." },
+    { "id": "differential", "name": "Sistema autoblocante diferencial · Valvulina OEM VW", "price": 190, "clubPrice": 175, "keywords": ["autoblocante", "diferencial", "valvulina"], "conditions": "Clubs: 175 € con IVA, sujeto a acreditación. Confirma compatibilidad con el taller." },
+    { "id": "phone", "name": "Consulta telefónica de 30 minutos", "price": 40, "keywords": ["consulta telefonica", "llamada", "hablar por telefono"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
+    { "id": "visit", "name": "Consulta presencial", "price": 45, "keywords": ["consulta presencial", "cita presencial"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
+    { "id": "quote", "name": "Presupuesto online", "price": 30, "keywords": ["presupuesto online"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." }
+  ],
+  "quoteOnly": [
+    { "name": "Cambio de bomba de agua", "keywords": ["bomba de agua"], "conditions": "La tabla distingue con y sin adicional, pero no indica importes. Necesita presupuesto del taller." },
+    { "name": "Montaje de muelles", "keywords": ["muelles"], "conditions": "La tabla indica tiempos de trabajo, pero no un precio cerrado. Confirma piezas y vehículo con el taller." },
+    { "name": "Montaje de suspensión", "keywords": ["suspension"], "conditions": "No tiene importe cerrado para esta intervención en la tabla. Consulta el total con el taller." },
+    { "name": "Cambio de ruedas / neumáticos", "keywords": ["neumaticos", "ruedas"], "conditions": "Sin precio cerrado. Indica medida, cantidad y vehículo para concretar el presupuesto." },
+    { "name": "Filtro BMC", "keywords": ["bmc", "filtro"], "conditions": "Sin precio cerrado en la tabla. Indica modelo y motor para consultar compatibilidad y precio." },
+    { "name": "Stage 1 REVO", "keywords": ["revo", "stage 1", "reprogramacion"], "conditions": "No hay precio base en la tabla. Descuento clubs indicado: 10 %, sujeto a condiciones y confirmación del taller." },
+    { "name": "Stage 1 TLR Sport", "keywords": ["tlr", "stage 1", "reprogramacion"], "conditions": "No hay precio base en la tabla. Descuento clubs indicado: 20 %, sujeto a condiciones y confirmación del taller." },
+    { "name": "DSG 7 DQ381 · OEM VW", "keywords": ["dq381", "dsg oem"], "conditions": "La tabla no indica precio para esta variante. Consulta con el taller." },
+    { "name": "Suspensiones Öhlins", "keywords": ["ohlins", "suspension"], "conditions": "Sin precio base. Descuento clubs indicado: 10 %, sujeto a condiciones." },
+    { "name": "Pastillas SDT Brakes S50", "keywords": ["pastillas", "frenos", "s50"], "conditions": "Sin precio base. Descuento clubs indicado: 20 %, sujeto a condiciones. Indica modelo y eje del vehículo." },
+    { "name": "Pastillas SDT Brakes RT66", "keywords": ["pastillas", "frenos", "rt66"], "conditions": "Sin precio base. Descuento clubs indicado: 10 %, sujeto a condiciones. Indica modelo y eje del vehículo." },
+    { "name": "Latiguillos metálicos SDT Brakes", "keywords": ["latiguillos"], "conditions": "Sin precio base. Descuento clubs indicado: 5 %, sujeto a condiciones." },
+    { "name": "OZ Racing Wheels", "keywords": ["oz racing", "llantas"], "conditions": "Sin precio base. Descuento clubs indicado: 5 %, sujeto a condiciones. Indica medida y vehículo." }
+  ]
+}
