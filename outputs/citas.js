@@ -17,7 +17,8 @@
     <form id="booking-form" novalidate>
       <section data-step="0"><h2>Elige tu consulta</h2>
         <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 40 € IVA incluido</option><option value="visit">Presencial · 45 € IVA incluido</option></select></div>
-        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online</option><option value="quick-mechanics">Mecánica rápida</option></select></div></div>
+        <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online</option><option value="quick-mechanics">Mecánica rápida</option><option value="exhausts">Escapes</option><option value="other-help">Otra ayuda</option></select>
+        <div id="booking-other-wrap" hidden><label for="booking-other">¿Qué necesitas?</label><textarea id="booking-other" maxlength="1500" placeholder="Cuéntanos qué ayuda necesitas" disabled></textarea></div></div></div>
         <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p>El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p><p>Lunes a viernes · Horario de España peninsular</p>
       </section>
       <section data-step="1" hidden><h2>Elige día y hora</h2><p id="booking-professional"></p>
@@ -55,7 +56,7 @@
   const format=value=>new Intl.DateTimeFormat('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(value+'T12:00:00'));
   let step=0,selected=null;
   const phone=()=>get('mode').value==='phone',person=()=>get('topic').value==='tuning'?'Joaquín · Reprogramaciones':'Germán · Mecánica',amount=()=>phone()?'40 €':'45 €';
-  const reason=()=>get('topic').selectedOptions[0].textContent;
+  const reason=()=>get('topic').selectedOptions[0].textContent+(get('topic').value==='other-help'?' · '+get('other').value:'');
   function show(value){
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
     get('back').hidden=step===0;get('forward').hidden=step===3;get('error').textContent='';
@@ -65,7 +66,7 @@
     if(step===3){get('product').textContent=(phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),'Motivo: '+reason(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
     root.scrollIntoView({block:'start',behavior:'smooth'});
   }
-  function update(){selected=null;get('consent').checked=false;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
+  function update(){selected=null;get('consent').checked=false;const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
     get('professional').textContent=reason()+' · '+person()+' · '+(get('topic').value==='tuning'?'08:00–16:00':'08:00–15:30');
@@ -88,6 +89,6 @@
   get('prev').onclick=()=>move(-1);get('next').onclick=()=>move(1);get('mode').onchange=update;get('topic').onchange=update;
   get('back').onclick=()=>show(step===2&&!phone()?0:step-1);get('edit').onclick=()=>show(0);
   get('remove').onclick=()=>{get('form').reset();selected=null;get('date').value=now().slice(0,10);get('summary').textContent='';update();show(0);};
-  get('form').onsubmit=e=>{e.preventDefault();if(step===0){if(!get('topic').reportValidity())return;show(phone()?1:2);}else if(step===1){if(!selected){get('error').textContent='Selecciona un día y una hora.';return;}if(selected.date+' '+selected.time<=now()){selected=null;calendar();get('error').textContent='Esa hora ya ha pasado. Selecciona otra franja.';return;}show(2);}else if(step===2){for(const input of sections[2].querySelectorAll('input,textarea'))if(!input.reportValidity())return;show(3);}};
+  get('form').onsubmit=e=>{e.preventDefault();if(step===0){if(!get('topic').reportValidity()||!get('other').reportValidity())return;show(phone()?1:2);}else if(step===1){if(!selected){get('error').textContent='Selecciona un día y una hora.';return;}if(selected.date+' '+selected.time<=now()){selected=null;calendar();get('error').textContent='Esa hora ya ha pasado. Selecciona otra franja.';return;}show(2);}else if(step===2){for(const input of sections[2].querySelectorAll('input,textarea'))if(!input.reportValidity())return;show(3);}};
   update();show(0);
 })();
