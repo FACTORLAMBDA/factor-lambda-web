@@ -24,6 +24,14 @@
       "dest": "/api/instagram-feed.js"
     },
     {
+      "src": "/api/repro-quotes",
+      "dest": "/api/repro-quotes.js"
+    },
+    {
+      "src": "/api/stripe-webhook",
+      "dest": "/api/stripe-webhook.js"
+    },
+    {
       "src": "/personaliza.html",
       "status": 302,
       "headers": { "Location": "/" }
