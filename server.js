@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const instagramFeed = require("./api/instagram-feed");
 const reproQuotes = require("./api/repro-quotes");
 const stripeWebhook = require("./api/stripe-webhook");
+const tlrCatalog = require('./api/tlr-catalog');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "outputs");
@@ -62,6 +63,7 @@ function serveStatic(req, res) {
 
 const server = http.createServer((req, res) => {
   const route = new URL(req.url, 'http://localhost').pathname;
+  if (route === '/api/tlr-catalog') {tlrCatalog(req, createApiResponse(res));return;}
   if (route === '/api/repro-quotes' || route === '/api/stripe-webhook') {
     (route === '/api/repro-quotes' ? reproQuotes : stripeWebhook)(req, createApiResponse(res));
     return;

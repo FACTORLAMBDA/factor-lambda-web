@@ -55,17 +55,16 @@ la confirmacion de pago. No resetearlo sin comprobar el envio en el proveedor.
 
 ## Catalogo de referencia
 
-outputs/repro-catalog.json contiene solo diez fichas publicas contrastadas, con
-su enlace de origen y fecha de consulta. No es el catalogo completo de BR-Performance.
-La descarga automatizada de la web devolvio HTTP 403. Para ampliarlo a todas las
-marcas/modelos hace falta una exportacion o acceso autorizado a una fuente completa.
-No hay un scraper que evite ese bloqueo.
+El selector consulta TLR SPORT mediante /api/tlr-catalog y su formulario publico.
+Cadena: marca, modelo, combustible, motor y potencia original. El cliente indica
+su ano por separado; el lanzamiento publicado no se interpreta como compatibilidad.
+Se mantiene el texto literal del par: no se inventa un par original ni se interpreta
+un intervalo ambiguo como una cifra garantizada. No se muestran las tarifas de TLR.
+El importe final sigue introduciendose y confirmandose desde el panel privado.
 
-Solo se reutilizan los campos factuales de identificacion y potencia/par. No se
-copian sus precios, textos comerciales, garantias, marcas graficas ni curvas. Los
-resultados se identifican como referencia externa, no como resultados garantizados
-de TLR SPORT o REVO. El servidor vuelve a resolver la ficha para evitar que el cliente
-manipule los valores enviados en la solicitud.
-
-Para ampliar, anadir registros con id unico, make, model, generation, from, to,
-engine, stage, stockPower, referencePower, stockTorque, referenceTorque y sourceUrl.
+Cache de una hora, consultas con limite de tiempo y campos acotados, URL fija de
+origen y sin insertar HTML remoto en la web. Si TLR falla, se ofrece entrada manual.
+La integracion depende del formato/disponibilidad de su formulario publico; no es
+una API contractual ni una copia completa de su base de datos. Las solicitudes
+guardan la identificacion del coche, no confian en cifras o precios del navegador.
+Las antiguas fichas de BR-Performance se han retirado del catalogo publico.

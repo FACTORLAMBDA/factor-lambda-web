@@ -17,9 +17,9 @@ async function apiCall(method,url,body,authorization){let status,payload;await a
 (async()=>{
  process.env.QUOTES_ENABLED='false';assert.equal((await apiCall('POST','/api/repro-quotes',{})).status,503);process.env.QUOTES_ENABLED='true';
  assert.equal((await apiCall('GET','/api/repro-quotes?action=list')).status,401);
- const lead={catalogId:'vw-golf8-gti',year:2022,name:'Prueba',email:'test@example.com',phone:'+34 600 000 000',brand:'REVO',dyno:true,notes:'Prueba',emailConsent:true,whatsappConsent:true,challenge:'test'};
- assert.throws(()=>service.validateLead({...lead,year:1990}));assert.throws(()=>service.validateLead({...lead,emailConsent:false}));
- const created=await apiCall('POST','/api/repro-quotes',lead);assert.equal(created.status,201);assert.equal(emails.length,0);const id=created.payload.reference;assert.equal(quotes[0].vehicle.reference.power,320);assert.equal(quotes[0].total_cents,undefined);
+ const lead={vehicle:'Volkswagen Golf',engine:'2.0 TSI GTI 245 CV',year:2022,name:'Prueba',email:'test@example.com',phone:'+34 600 000 000',brand:'REVO',dyno:true,notes:'Prueba',emailConsent:true,whatsappConsent:true,challenge:'test'};
+ assert.throws(()=>service.validateLead({...lead,year:1800}));assert.throws(()=>service.validateLead({...lead,emailConsent:false}));
+ const created=await apiCall('POST','/api/repro-quotes',lead);assert.equal(created.status,201);assert.equal(emails.length,0);const id=created.payload.reference;assert.equal(quotes[0].vehicle.model,'Volkswagen Golf');assert.equal(quotes[0].vehicle.reference,undefined);assert.equal(quotes[0].total_cents,undefined);
  const authorization='Bearer '+env.QUOTE_ADMIN_PASSWORD;
  const approved=await apiCall('POST','/api/repro-quotes?action=approve',{id,baseCents:50000},authorization);assert.equal(approved.status,200);assert.equal(approved.payload.status,'sent');assert.equal(quotes[0].total_cents,55000);assert.equal(emails.length,1);assert.equal(messages.length,1);assert.ok(messages[0].template.components[0].parameters[3].text.includes('/presupuesto.html'));
  await apiCall('POST','/api/repro-quotes?action=approve',{id,baseCents:50000},authorization);assert.equal(emails.length,1);assert.equal(messages.length,1);
