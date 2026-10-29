@@ -56,13 +56,18 @@ la confirmacion de pago. No resetearlo sin comprobar el envio en el proveedor.
 ## Catalogo de referencia
 
 Marca y modelo se consultan a TLR SPORT mediante /api/tlr-catalog. A continuacion
-se elige generacion, ano, combustible y motor/potencia en vehicle-generations.json.
+se elige generacion, combustible y motor/potencia en vehicle-generations.json.
 Esta segunda fuente contiene fichas factuales verificadas de BR-Performance:
 las seis generaciones del Leon y referencias iniciales de Golf y Audi S3.
 La cobertura es parcial, no una importacion completa. Los modelos no verificados
 ofrecen entrada manual y nunca muestran motores de otras generaciones.
-Los intervalos de motor son mas restrictivos que la generacion cuando la fuente
-los especifica. En cambios de generacion durante un mismo ano hay que elegirla.
+Los intervalos de motor se muestran en cada variante. No se pide un ano exacto
+en el selector: se guarda el intervalo de la variante elegida, sin inventar un ano.
+El servidor resuelve generationId y engineIndex contra el catalogo local y no
+confia en nombres, cifras o periodos enviados desde el navegador. La entrada
+manual conserva su pregunta de ano para vehiculos que no aparecen en las tablas.
+El Leon III contiene las 17 variantes de la captura aportada: 11 gasolina,
+5 diesel y 1 gas, con los anos y potencias de serie de dicha referencia.
 Solo se muestran resultados TLR si motor, potencia y generacion coinciden de forma
 explicita. De lo contrario, se solicita valoracion sin inventar cifras de rendimiento.
 Se mantiene el texto literal del par: no se inventa un par original ni se interpreta
