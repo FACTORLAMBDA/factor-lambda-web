@@ -26,7 +26,8 @@
         <div class="service-fields"><div><label for="booking-mode">Tipo de cita</label><select id="booking-mode"><option value="phone">Telefónica · 25 € IVA incluido</option><option value="visit">Presencial · 30 € IVA incluido</option></select></div>
         <div><label for="booking-topic">¿Cuál es el motivo?</label><select id="booking-topic" required><option value="">Selecciona el motivo</option><option value="mechanics">Mecánica · Germán</option><option value="tuning">Reprogramaciones · Joaquín</option><option value="online-quote">Presupuesto online · 30 € IVA incluido</option><option value="quick-mechanics">Mecánica rápida</option><option value="dynamic-test">Prueba dinámica</option><option value="exhausts">Escapes</option><option value="other-help">Otra ayuda</option></select>
         <div id="booking-other-wrap" hidden><label for="booking-other">¿Qué necesitas?</label><textarea id="booking-other" maxlength="1500" placeholder="Cuéntanos qué ayuda necesitas" disabled></textarea></div></div></div>
-        <div id="booking-repro-options" class="service-fields" hidden><div><label for="booking-brand">Marca de la reprogramación</label><select id="booking-brand"><option value="">Elige marca</option><option value="TLR SPORT">TLR SPORT</option><option value="REVO">REVO</option></select></div><div><label for="booking-dyno">Banco de potencia</label><select id="booking-dyno"><option value="yes">Con banco · 2 h 30 min</option><option value="no">Sin banco · 1 h 30 min</option></select></div></div>
+        <div id="booking-repro-vehicle" hidden><div id="booking-vehicle-first"></div><div class="service-fields"><div><label for="booking-engine">Motor</label><input id="booking-engine" maxlength="120" placeholder="Ej. 2.0 TSI 245 CV" disabled></div><div><label for="booking-year">Año</label><input id="booking-year" type="number" min="1886" step="1" placeholder="Ej. 2022" disabled></div></div></div>
+        <div id="booking-repro-options" class="service-fields" hidden><div><label for="booking-brand">Marca de la reprogramación</label><select id="booking-brand"><option value="">Elige marca</option><option value="TLR SPORT">TLR SPORT</option><option value="REVO">REVO</option></select></div><div><label for="booking-dyno">Banco de potencia</label><select id="booking-dyno"><option value="yes">Con banco · +50 € · 2 h 30 min</option><option value="no">Sin banco · 1 h 30 min</option></select></div></div>
         <p id="booking-price" class="booking-price"></p><p id="booking-description"></p><p class="consult-credit">El importe abonado por la consulta se descontará del presupuesto asignado si la reparación se realiza con nosotros.</p><p>Lunes a viernes · Horario de España peninsular</p>
       </section>
       <section data-step="1" hidden><h2>Elige día y hora</h2><p id="booking-professional"></p>
@@ -62,11 +63,16 @@
   if(isRepro){
     get('mode').value='visit';get('topic').value='tuning';
     root.querySelector('.service-fields').hidden=true;get('repro-options').hidden=false;get('brand').required=true;
-    root.querySelector('[data-step="0"] h2').textContent='Configura tu reprogramación';
+    get('repro-vehicle').hidden=false;
+    get('vehicle-first').append(root.querySelector('label[for="booking-vehicle"]'),get('vehicle'));
+    get('vehicle').placeholder='Ej. Volkswagen Golf GTI';
+    for(const field of ['engine','year']){get(field).disabled=false;get(field).required=true;}
+    get('year').max=String(new Date().getFullYear()+1);
+    root.querySelector('[data-step="0"] h2').textContent='Cuéntanos qué coche tienes';
     root.querySelectorAll('.consult-credit,.booking-conditions,.payment-preview').forEach(e=>e.hidden=true);
     root.querySelector('.cart-totals h3').textContent='TU REPROGRAMACIÓN';
     get('consent').required=false;
-    get('tax-note').textContent='Precio a confirmar según vehículo y configuración. Esta vista previa no realiza cobros.';
+    get('tax-note').textContent='Precio base de la repro a confirmar. El banco de potencia añade 50 € IVA incluido. Esta vista previa no realiza cobros.';
   }
   const now=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
   const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -77,16 +83,19 @@
   const duration=()=>isRepro?(get('dyno').value==='yes'?'2 h 30 min':'1 h 30 min'):'30 minutos';
   const scheduled=()=>isRepro||phone();
   const reason=()=>get('topic').selectedOptions[0].textContent+(get('topic').value==='other-help'?' · '+get('other').value:'');
+  function vehicleReady(){if(isRepro)get('repro-options').hidden=!['vehicle','engine','year'].every(field=>get(field).value.trim()&&get(field).checkValidity());}
+  if(isRepro)for(const field of ['vehicle','engine','year'])get(field).addEventListener('input',vehicleReady);
   function show(value){
+    if(value===0)vehicleReady();
     step=value;sections.forEach((e,i)=>e.hidden=i!==step);progress.forEach((e,i)=>{e.classList.toggle('complete',i<=step);if(i===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
     get('back').hidden=step===0;get('forward').hidden=step===3;get('error').textContent='';
     const appointment=()=>scheduled()?format(selected.date)+' · '+selected.time+(isRepro?'–'+selected.end:'')+' · '+duration():'Presencial · Fecha y hora por acordar con el taller';
     if(step===1)calendar();
     if(step===2)get('chosen').textContent=(isRepro?'Tu reprogramación: ':'Tu consulta: ')+person()+' · '+appointment()+' · '+amount()+(isRepro?'':' IVA incluido');
-    if(step===3){get('product').textContent=(isRepro?'Reprogramación '+get('brand').value:phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),isRepro?(get('dyno').value==='yes'?'Con banco de potencia':'Sin banco de potencia'):'Motivo: '+reason(),'Vehículo: '+get('vehicle').value,'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();}
+    if(step===3){get('product').textContent=(isRepro?'Reprogramación '+get('brand').value:phone()?'Consulta telefónica':'Consulta presencial')+' · '+person();get('summary').textContent=[appointment(),isRepro?(get('dyno').value==='yes'?'Con banco de potencia · Suplemento: 50 € IVA incluido':'Sin banco de potencia'):'Motivo: '+reason(),'Vehículo: '+get('vehicle').value,...(isRepro?['Motor: '+get('engine').value,'Año: '+get('year').value]:[]),'Matrícula: '+get('plate').value,'Cliente: '+get('name').value,'Email: '+get('email').value,'Consulta: '+get('details').value].join('\n');get('total').textContent=amount();get('item-price').textContent=amount();if(isRepro)get('tax-note').textContent=get('dyno').value==='yes'?'Precio base a confirmar + 50 € IVA incluido por el banco de potencia.':'Precio de la reprogramación a confirmar. Sin suplemento de banco de potencia.';}
     root.scrollIntoView({block:'start',behavior:'smooth'});
   }
-  function update(){selected=null;get('consent').checked=false;const quote=get('topic').value==='online-quote';get('mode').options[0].textContent='Telefónica · '+(quote?'30':'25')+' € IVA incluido';get('mode').options[1].textContent='Presencial · 30 € IVA incluido';const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=isRepro?duration()+' · Precio a confirmar':amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=isRepro?'TLR SPORT o REVO · 08:00–13:00 y 14:00–17:00. La cita debe completarse dentro del tramo elegido.':phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
+  function update(){selected=null;get('consent').checked=false;const quote=get('topic').value==='online-quote';get('mode').options[0].textContent='Telefónica · '+(quote?'30':'25')+' € IVA incluido';get('mode').options[1].textContent='Presencial · 30 € IVA incluido';const other=get('topic').value==='other-help';get('other-wrap').hidden=!other;get('other').disabled=!other;get('other').required=other;get('price').textContent=isRepro?duration()+(get('dyno').value==='yes'?' · Banco: +50 € IVA incluido':' · Sin banco')+' · Precio base a confirmar':amount()+' IVA incluido'+(phone()?' · 30 minutos':'');get('description').textContent=isRepro?'TLR SPORT o REVO · 08:00–13:00 y 14:00–17:00. La cita debe completarse dentro del tramo elegido.':phone()?'Consulta telefónica para resolver dudas y valorar posibles diagnósticos.':'Consulta presencial en nuestras instalaciones. Acordaremos contigo el día y la hora.';}
   function calendar(){
     const current=now();get('date').min=current.slice(0,10);get('prev').disabled=get('date').value<=get('date').min;
     get('professional').textContent=isRepro?get('brand').value+' · '+(get('dyno').value==='yes'?'Con banco de potencia':'Sin banco de potencia')+' · '+duration()+' · 08:00–13:00 / 14:00–17:00':reason()+' · '+person()+' · '+(joaquin()?'08:00–16:00':'08:00–15:30');
@@ -109,6 +118,6 @@
   get('prev').onclick=()=>move(-1);get('next').onclick=()=>move(1);get('mode').onchange=update;get('topic').onchange=update;get('brand').onchange=update;get('dyno').onchange=update;
   get('back').onclick=()=>show(step===2&&!scheduled()?0:step-1);get('edit').onclick=()=>show(0);
   get('remove').onclick=()=>{get('form').reset();if(isRepro){get('mode').value='visit';get('topic').value='tuning';}selected=null;get('date').value=now().slice(0,10);get('summary').textContent='';update();show(0);};
-  get('form').onsubmit=e=>{e.preventDefault();if(step===0){if(!get('topic').reportValidity()||!get('other').reportValidity()||(isRepro&&!get('brand').reportValidity()))return;show(scheduled()?1:2);}else if(step===1){if(!selected){get('error').textContent='Selecciona un día y una hora.';return;}if(selected.date+' '+selected.time<=now()){selected=null;calendar();get('error').textContent='Esa hora ya ha pasado. Selecciona otra franja.';return;}show(2);}else if(step===2){for(const input of sections[2].querySelectorAll('input,textarea'))if(!input.reportValidity())return;show(3);}};
-  update();show(0);
+  get('form').onsubmit=e=>{e.preventDefault();if(step===0){if(!get('topic').reportValidity()||!get('other').reportValidity())return;if(isRepro){for(const field of ['vehicle','engine','year','brand'])if(!get(field).reportValidity())return;}show(scheduled()?1:2);}else if(step===1){if(!selected){get('error').textContent='Selecciona un día y una hora.';return;}if(selected.date+' '+selected.time<=now()){selected=null;calendar();get('error').textContent='Esa hora ya ha pasado. Selecciona otra franja.';return;}show(2);}else if(step===2){for(const input of sections[2].querySelectorAll('input,textarea'))if(!input.reportValidity())return;show(3);}};
+  update();vehicleReady();show(0);
 })();

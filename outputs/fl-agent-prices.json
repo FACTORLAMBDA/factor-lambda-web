@@ -26,6 +26,7 @@
     { "id": "quote", "name": "Presupuesto online", "price": 30, "keywords": ["presupuesto online"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." }
   ],
   "quoteOnly": [
+    { "name": "Banco de potencia en reprogramación", "keywords": ["banco de potencia", "repro con banco"], "conditions": "Añade 50 € IVA incluido al precio de la reprogramación, cuyo importe base debe confirmar el taller. Duración total con banco: 2 h 30 min; sin banco: 1 h 30 min. El suplemento no es una tarifa independiente de prueba en banco." },
     { "name": "Cambio de bomba de agua", "keywords": ["bomba de agua"], "conditions": "La tabla distingue con y sin adicional, pero no indica importes. Necesita presupuesto del taller." },
     { "name": "Montaje de muelles", "keywords": ["muelles"], "conditions": "La tabla indica tiempos de trabajo, pero no un precio cerrado. Confirma piezas y vehículo con el taller." },
     { "name": "Montaje de suspensión", "keywords": ["suspension"], "conditions": "No tiene importe cerrado para esta intervención en la tabla. Consulta el total con el taller." },
