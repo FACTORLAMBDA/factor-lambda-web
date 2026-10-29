@@ -21,8 +21,8 @@
     { "id": "manual", "name": "Valvulina de cambio manual", "price": 200, "clubPrice": 180, "keywords": ["cambio manual", "valvulina", "caja manual"], "conditions": "Clubs: 180 € con IVA, sujeto a acreditación. Confirma vehículo con el taller." },
     { "id": "haldex", "name": "Sistema Haldex 4Drive · Valvulina OEM VW", "price": 190, "clubPrice": 175, "keywords": ["haldex", "4drive", "valvulina"], "conditions": "Clubs: 175 € con IVA, sujeto a acreditación. Confirma compatibilidad con el taller." },
     { "id": "differential", "name": "Sistema autoblocante diferencial · Valvulina OEM VW", "price": 190, "clubPrice": 175, "keywords": ["autoblocante", "diferencial", "valvulina"], "conditions": "Clubs: 175 € con IVA, sujeto a acreditación. Confirma compatibilidad con el taller." },
-    { "id": "phone", "name": "Consulta telefónica de 30 minutos", "price": 40, "keywords": ["consulta telefonica", "llamada", "hablar por telefono"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
-    { "id": "visit", "name": "Consulta presencial", "price": 45, "keywords": ["consulta presencial", "cita presencial"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
+    { "id": "phone", "name": "Consulta telefónica de 30 minutos", "price": 25, "keywords": ["consulta telefonica", "llamada", "hablar por telefono"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
+    { "id": "visit", "name": "Consulta presencial", "price": 30, "keywords": ["consulta presencial", "cita presencial"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." },
     { "id": "quote", "name": "Presupuesto online", "price": 30, "keywords": ["presupuesto online"], "conditions": "El importe se descuenta del presupuesto si la reparación se realiza en Factor Lambda." }
   ],
   "quoteOnly": [
