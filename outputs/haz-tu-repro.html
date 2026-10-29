@@ -13,15 +13,15 @@
   <div class="booking-hero"><h1>HAZ TU REPRO</h1></div>
   <main id="repro-request-page">
     <p>Encuentra una referencia para tu motor y solicita una propuesta personalizada de Factor Lambda.</p>
-    <p class="demo-note">Referencias del catálogo oficial de TLR SPORT. Presupuesto personalizado tras revisar tu vehículo.</p>
+    <p class="demo-note">Selecciona tu generación y motor. Si no aparece tu versión, solicita una valoración indicando tu vehículo manualmente.</p>
     <form id="repro-selector"><div class="contact-fields">
       <div><label for="repro-make">Marca</label><select id="repro-make" required><option value="">Cargando marcas…</option></select></div>
       <div><label for="repro-model">Modelo</label><select id="repro-model" required disabled><option value="">Selecciona marca</option></select></div>
-      <div><label for="repro-year">Año de tu coche</label><input id="repro-year" type="number" min="1886" max="2027" required></div>
+    </div><fieldset class="generation-field"><legend>Generación y años de fabricación</legend><div id="repro-generations" class="generation-list" role="group" aria-label="Generación del vehículo"></div><p id="generation-status" role="status">Selecciona marca y modelo.</p></fieldset><div class="contact-fields">
+      <div><label for="repro-year">Año de tu coche</label><input id="repro-year" type="number" min="1886" max="2027" required disabled></div>
       <div><label for="tlr-fuel">Combustible</label><select id="tlr-fuel" required disabled><option value="">Selecciona modelo</option></select></div>
     </div><label for="repro-engine">Motor y versión</label><select id="repro-engine" required disabled><option value="">Selecciona año</option></select>
-    <label for="tlr-power">Potencia original (CV)</label><select id="tlr-power" required disabled><option value="">Selecciona motor</option></select>
-    <button type="button" id="repro-manual-toggle" class="text-action">Mi vehículo no aparece</button>
+    <p id="engine-status" role="status"></p><button type="button" id="repro-manual-toggle" class="text-action">Mi vehículo no aparece</button>
     <div id="repro-manual" class="contact-fields" hidden><div><label for="manual-vehicle">Marca y modelo</label><input id="manual-vehicle" maxlength="150"></div><div><label for="manual-year">Año</label><input id="manual-year" type="number" min="1886" max="2100"></div><div><label for="manual-engine">Motor</label><input id="manual-engine" maxlength="150"></div></div>
     <section id="repro-results" hidden aria-live="polite"><h2>Referencia TLR SPORT · Stage 1</h2><p id="tlr-version"></p><table class="repro-results-table"><thead><tr><th>Potencia</th><th>Original</th><th>Stage 1</th><th>Incremento</th></tr></thead><tbody><tr><th>CV</th><td id="stock-power"></td><td id="reference-power"></td><td id="power-gain"></td></tr></tbody></table><p>Par publicado por TLR: <strong id="tlr-torque"></strong></p><p class="demo-note">Datos orientativos de TLR SPORT, sujetos a comprobación de motor, electrónica, año y estado del coche. No representan resultados de REVO ni garantizan la compatibilidad de tu unidad. <a id="repro-source" target="_blank" rel="noopener">Consultar fuente oficial</a>. El presupuesto se confirma por separado; el banco suma 50 € IVA incluido.</p></section>
     <div class="booking-navigation"><button type="submit">CONTINUAR &#8594;</button></div></form>
@@ -35,5 +35,5 @@
     </form></section><p id="catalog-error" role="alert"></p>
   </main>
   <footer>Factor Lambda · Lunes a viernes · 08:00–13:00 y 14:00–17:00</footer>
-  <script src="/repro-request.js" defer></script><script src="/citas.js" defer></script>
+  <script src="/vehicle-filter.js" defer></script><script src="/repro-request.js" defer></script><script src="/citas.js" defer></script>
 </body></html>

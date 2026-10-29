@@ -55,9 +55,16 @@ la confirmacion de pago. No resetearlo sin comprobar el envio en el proveedor.
 
 ## Catalogo de referencia
 
-El selector consulta TLR SPORT mediante /api/tlr-catalog y su formulario publico.
-Cadena: marca, modelo, combustible, motor y potencia original. El cliente indica
-su ano por separado; el lanzamiento publicado no se interpreta como compatibilidad.
+Marca y modelo se consultan a TLR SPORT mediante /api/tlr-catalog. A continuacion
+se elige generacion, ano, combustible y motor/potencia en vehicle-generations.json.
+Esta segunda fuente contiene fichas factuales verificadas de BR-Performance:
+las seis generaciones del Leon y referencias iniciales de Golf y Audi S3.
+La cobertura es parcial, no una importacion completa. Los modelos no verificados
+ofrecen entrada manual y nunca muestran motores de otras generaciones.
+Los intervalos de motor son mas restrictivos que la generacion cuando la fuente
+los especifica. En cambios de generacion durante un mismo ano hay que elegirla.
+Solo se muestran resultados TLR si motor, potencia y generacion coinciden de forma
+explicita. De lo contrario, se solicita valoracion sin inventar cifras de rendimiento.
 Se mantiene el texto literal del par: no se inventa un par original ni se interpreta
 un intervalo ambiguo como una cifra garantizada. No se muestran las tarifas de TLR.
 El importe final sigue introduciendose y confirmandose desde el panel privado.
@@ -67,4 +74,5 @@ origen y sin insertar HTML remoto en la web. Si TLR falla, se ofrece entrada man
 La integracion depende del formato/disponibilidad de su formulario publico; no es
 una API contractual ni una copia completa de su base de datos. Las solicitudes
 guardan la identificacion del coche, no confian en cifras o precios del navegador.
-Las antiguas fichas de BR-Performance se han retirado del catalogo publico.
+Los datos BR se usan para identificar motores; no se copian sus precios ni se
+atribuyen sus resultados a TLR SPORT o REVO. Conservar URL y fecha al ampliar fichas.
