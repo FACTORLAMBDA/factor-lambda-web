@@ -27,6 +27,7 @@
   document.addEventListener('pointerdown', event => {if(event.pointerType === 'mouse') cursor.dataset.down = 'true';});
   document.addEventListener('pointerup', () => cursor.dataset.down = 'false');
   document.documentElement.addEventListener('pointerleave', hide);
+  document.addEventListener('pointerover', event => {if(event.target.tagName==='IFRAME')hide();});
   document.addEventListener('keydown', hide);
   document.addEventListener('visibilitychange', () => {if(document.hidden)hide();});
   window.addEventListener('blur', hide);fine.addEventListener('change', hide);

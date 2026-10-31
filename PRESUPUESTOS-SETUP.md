@@ -5,7 +5,9 @@
 La web no publica un precio de repro. El propietario revisa cada solicitud y fija
 el precio base con IVA desde /panel-presupuestos.html. El servidor anade 5000 centimos
 si se ha solicitado banco. El enlace enviado abre /presupuesto.html, y el cobro se
-realiza en Stripe Checkout. La confirmacion de pago depende del webhook firmado,
+realiza dentro de la web con Stripe Embedded Checkout, exclusivamente en pruebas.
+Ver STRIPE-SETUP.md para las claves, el webhook y la comprobacion de la integracion.
+La confirmacion de pago depende del webhook firmado,
 no del retorno del navegador. No se reserva automaticamente una cita ni se bloquean
 horarios: el taller acuerda la fecha con el cliente tras valorar el coche.
 
@@ -31,7 +33,9 @@ No afirma que una solicitud, correo o presupuesto haya sido enviado automaticame
    parametros en este orden: nombre del cliente, referencia, total con IVA y enlace
    completo al carrito. WHATSAPP_TEMPLATE_LANGUAGE debe coincidir exactamente con
    la plantilla aprobada (por defecto es). Solo se envia a quien lo haya solicitado.
-6. Completar Stripe y guardar STRIPE_SECRET_KEY. Habilitar los metodos de pago de la
+6. Configurar Stripe en pruebas siguiendo STRIPE-SETUP.md, incluyendo la clave
+   publicable, la secreta, el secreto del webhook y los interruptores test-only.
+   Habilitar los metodos de pago de la
    cuenta; los monederos se muestran segun elegibilidad del cliente. Crear webhook
    para https://www.factorlambda.com/api/stripe-webhook y guardar STRIPE_WEBHOOK_SECRET.
    Suscribir checkout.session.completed y checkout.session.async_payment_succeeded.
