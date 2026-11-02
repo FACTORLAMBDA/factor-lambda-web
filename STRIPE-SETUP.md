@@ -1,5 +1,9 @@
 # Stripe Embedded Checkout: pruebas, sin cobros reales
 
+Actualizacion: el propietario ha autorizado preparar produccion. Consultar
+STRIPE-PRODUCCION.md; los bloqueos por defecto permanecen cerrados. Las menciones
+test-only de esta guia describen la implementacion inicial, no una activacion real.
+
 ## Estado y alcance
 
 La integracion incrusta Checkout dentro de /presupuesto.html. Sustituye al pago

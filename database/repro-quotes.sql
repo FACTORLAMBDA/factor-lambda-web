@@ -11,7 +11,7 @@ create table if not exists public.fl_quote_requests (
   total_cents integer,
   delivery jsonb not null default '{}',
   stripe_session_id text,
-  stripe_mode text check (stripe_mode = 'test'),
+  stripe_mode text check (stripe_mode in ('test','live')),
   notification_status text not null default 'pending' check (notification_status in ('pending','sending','sent')),
   check ((base_cents is null and total_cents is null) or total_cents = base_cents + case when config->>'dyno' = 'true' then 5000 else 0 end)
 );
@@ -19,4 +19,6 @@ alter table public.fl_quote_requests enable row level security;
 revoke all on public.fl_quote_requests from anon, authenticated;
 create index if not exists fl_quote_requests_created_idx on public.fl_quote_requests(created_at desc);
 -- Existing installations: add the mode marker without changing previous orders.
-alter table public.fl_quote_requests add column if not exists stripe_mode text check (stripe_mode = 'test');
+alter table public.fl_quote_requests add column if not exists stripe_mode text;
+alter table public.fl_quote_requests drop constraint if exists fl_quote_requests_stripe_mode_check;
+alter table public.fl_quote_requests add constraint fl_quote_requests_stripe_mode_check check (stripe_mode in ('test','live'));
