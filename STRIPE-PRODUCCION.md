@@ -13,6 +13,8 @@ Mantener STRIPE_CHECKOUT_ENABLED=false mientras se completan los pasos siguiente
 2. STRIPE_MODE=live y STRIPE_LIVE_APPROVED=false durante la preparacion.
 3. Configurar Supabase y ejecutar database/repro-quotes.sql, incluida la migracion
    que permite stripe_mode test/live. Conservar RLS y las claves solo en servidor.
+   Guardar la clave moderna sb_secret_... como SUPABASE_SERVICE_ROLE_KEY (nombre
+   historico de la variable). El backend la envia solo en apikey, no como JWT.
 4. Configurar QUOTES_ENABLED, secretos del panel/enlace y Turnstile, ademas del correo
    Resend. No activar el envio de presupuestos hasta verificar destinatarios y remitente.
 5. El webhook real escucha checkout.session.completed y
