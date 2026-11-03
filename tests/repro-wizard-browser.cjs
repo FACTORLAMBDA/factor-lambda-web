@@ -5,7 +5,7 @@ process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
   for(const width of [1440,390]){
     const page=await browser.newPage({viewport:{width,height:1000}});let posts=0;const errors=[];
     page.on('request',r=>{if(r.method()==='POST')posts++;});page.on('pageerror',e=>errors.push(e.message));
-    await page.goto('http://localhost:3000/reserva-repro-preview.html');
+    await page.goto('http://localhost:3000/haz-tu-repro.html');
     await page.locator('#repro-make option').nth(85).waitFor({state:'attached'});
     await page.selectOption('#repro-make','seat');await page.waitForFunction(()=>!document.getElementById('repro-model').disabled);
     await page.selectOption('#repro-model',{label:'Leon'});await page.locator('#repro-generations button').first().click();await page.locator('.engine-row input').first().check();
@@ -21,5 +21,5 @@ process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
     await page.locator('#payment-back').click();assert.equal(await page.inputValue('#lead-name'),'Prueba local');await page.locator('#lead-back').click();assert.ok(await page.locator('#repro-agenda').isVisible());
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(errors,[]);
     await page.screenshot({path:'work/repro-agenda-'+width+'.png',fullPage:true});await page.close();
-  }console.log('PASS preview: vehicle -> agenda -> contact -> payment, back preserves fields, REVO80/TLR100, valid duration, no request/email/charge, desktop/mobile.');
+  }console.log('PASS live-page flow: vehicle -> agenda -> contact -> payment, back preserves fields, REVO80/TLR100, valid duration, no request/email/charge, desktop/mobile.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

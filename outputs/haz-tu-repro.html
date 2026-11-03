@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Haz tu repro | Factor Lambda</title>
+  <title>Reserva tu reprogramación | Factor Lambda</title>
   <link rel="icon" href="/assets/favicon-factor-lambda.png"><link rel="stylesheet" href="/citas.css">
   <style>
     *{box-sizing:border-box}body{margin:0;color:#fff}header{border-bottom:1px solid #333;padding:22px 5%;display:flex;align-items:center;justify-content:space-between;gap:20px}header a{color:#fff;text-decoration:none;font-weight:700}header a:last-child{color:#ff9b3b}main{margin:0 auto;padding:48px 24px 80px}footer{padding:24px;color:#aaa;text-align:center}button,input,select,textarea{font:inherit}button:focus-visible,a:focus-visible{outline:2px solid #ff9b3b;outline-offset:4px}[hidden]{display:none!important}
@@ -12,8 +12,7 @@
   <header><a href="/">FACTOR LAMBDA</a><a href="/reprogramaciones.html">&#8592; Reprogramaciones</a></header>
   <div class="booking-hero"><h1>HAZ TU REPRO</h1></div>
   <main id="repro-request-page">
-    <p>Encuentra una referencia para tu motor y solicita una propuesta personalizada de Factor Lambda.</p>
-    <p class="demo-note">Selecciona tu generación y motor. Si no aparece tu versión, solicita una valoración indicando tu vehículo manualmente.</p>
+    <p>Tu vehículo y su preparación.</p>
     <form id="repro-selector"><div class="contact-fields">
       <div><label for="repro-make">Marca</label><select id="repro-make" required><option value="">Cargando marcas…</option></select></div>
       <div><label for="repro-model">Modelo</label><select id="repro-model" required disabled><option value="">Selecciona marca</option></select></div>
@@ -24,15 +23,25 @@
     <div id="repro-manual" class="contact-fields" hidden><div><label for="manual-vehicle">Marca y modelo</label><input id="manual-vehicle" maxlength="150"></div><div><label for="manual-year">Año</label><input id="manual-year" type="number" min="1886" max="2100"></div><div><label for="manual-engine">Motor</label><input id="manual-engine" maxlength="150"></div></div>
     <div id="stage-controls" hidden><label for="repro-stage">Preparación de referencia</label><select id="repro-stage" disabled></select></div><section id="repro-results" hidden aria-live="polite"></section>
     <div class="booking-navigation"><button type="submit">CONTINUAR &#8594;</button></div></form>
-    <section id="repro-contact" hidden><h2>Recibe tu propuesta</h2><p id="repro-car-summary"></p><form id="repro-lead-form">
+    <nav class="repro-progress" aria-label="Pasos de reserva"><span data-repro-step="vehicle" aria-current="step">1. Vehículo</span><span data-repro-step="agenda">2. Agenda</span><span data-repro-step="contact">3. Contacto</span><span data-repro-step="payment">4. Pago</span></nav>
+    <section id="repro-agenda" hidden aria-labelledby="repro-agenda-title"><h2 id="repro-agenda-title" tabindex="-1">Elige día y hora</h2><p id="agenda-car-summary"></p><form id="repro-agenda-form">
+      <div id="repro-service-placement"></div>
+      <div class="repro-week-heading"><button type="button" id="repro-week-back" aria-label="Semana anterior">&#8592;</button><h3 id="repro-week-label"></h3><button type="button" id="repro-week-next" aria-label="Semana siguiente">&#8594;</button></div>
+      <div id="repro-week" class="repro-week" role="group" aria-label="Día de la cita"></div>
+      <h3 id="repro-day-label"></h3><div id="repro-times" class="repro-times" role="group" aria-label="Hora de inicio"></div>
+      <p id="repro-agenda-status" role="status"></p><p class="demo-note">La fecha seleccionada no queda reservada hasta confirmar disponibilidad y pago.</p>
+      <div class="booking-navigation"><button type="button" id="agenda-back">ATRÁS</button><button type="submit">CONTINUAR &#8594;</button></div>
+    </form></section>
+    <section id="repro-contact" hidden><h2 tabindex="-1" id="repro-contact-title">Datos de contacto</h2><p id="repro-car-summary"></p><p id="repro-contact-appointment"></p><form id="repro-lead-form">
       <div class="contact-fields"><div><label for="lead-name">Nombre completo</label><input id="lead-name" autocomplete="name" required maxlength="100"></div><div><label for="lead-phone">WhatsApp / teléfono</label><input id="lead-phone" type="tel" autocomplete="tel" placeholder="+34 612 34 56 78" required maxlength="25"></div><div><label for="lead-email">Email</label><input id="lead-email" type="email" autocomplete="email" required maxlength="254"></div></div>
-      <div class="service-fields"><div><label for="lead-brand">Preparador</label><select id="lead-brand"><option value="Sin preferencia">Asesoradme</option><option value="TLR SPORT">TLR SPORT</option><option value="REVO">REVO</option></select></div><div><label for="lead-dyno">Banco de potencia</label><select id="lead-dyno"><option value="yes">Con banco · +50 € IVA incluido · 2 h 30 min</option><option value="no">Sin banco · 1 h 30 min</option></select></div></div>
+      <div class="service-fields" id="repro-service-fields"><div><label for="lead-brand">Preparador</label><select id="lead-brand" required><option value="">Selecciona preparador</option><option value="TLR SPORT">TLR SPORT</option><option value="REVO">REVO</option></select></div><div><label for="lead-dyno">Banco de potencia</label><select id="lead-dyno"><option value="yes">Con banco · 2 h 30 min</option><option value="no">Sin banco · 1 h 30 min</option></select><p id="repro-bank-price"></p></div></div>
       <label for="lead-notes">¿Qué buscas para tu coche?</label><textarea id="lead-notes" maxlength="1500"></textarea>
-      <label class="booking-consent"><input type="checkbox" id="lead-email-consent" required><span>Solicito a Factor Lambda que tramite mi consulta y me envíe por correo el presupuesto y su enlace de pago.</span></label>
-      <label class="booking-consent"><input type="checkbox" id="lead-whatsapp-consent"><span>También quiero recibir de Factor Lambda mi presupuesto y su enlace de pago por WhatsApp.</span></label>
-      <div id="quote-verification"></div><p id="lead-status" role="status"></p><div class="booking-navigation"><button type="button" id="lead-back">ATRÁS</button><button type="submit" id="lead-send">SOLICITAR PRESUPUESTO</button></div>
-    </form></section><p id="catalog-error" role="alert"></p>
+      <label class="booking-consent"><input type="checkbox" id="lead-email-consent" required><span>Acepto el tratamiento de mis datos para gestionar la reserva y recibir su confirmación por correo tras el pago.</span></label>
+      <p id="lead-status" role="status"></p><div class="booking-navigation"><button type="button" id="lead-back">ATRÁS</button><button type="submit" id="lead-send">CONTINUAR AL PAGO &#8594;</button></div>
+    </form></section>
+    <section id="repro-payment" hidden aria-labelledby="repro-payment-title"><h2 id="repro-payment-title" tabindex="-1">Revisa tu reserva</h2><dl id="repro-payment-summary" class="repro-payment-summary"></dl><p id="repro-payment-status" role="status">El cobro directo está pendiente de conectar la tarifa exacta del vehículo y la disponibilidad de la agenda. No se ha reservado una cita ni realizado un cobro.</p><div id="repro-direct-checkout"></div><div class="booking-navigation"><button type="button" id="payment-back">ATRÁS</button><button type="button" id="repro-direct-pay" disabled>PAGO NO DISPONIBLE</button></div></section>
+    <p id="catalog-error" role="alert"></p>
   </main>
   <footer>Factor Lambda · Lunes a viernes · 08:00–13:00 y 14:00–17:00</footer>
-  <script src="/vehicle-filter.js" defer></script><script src="/performance-results.js" defer></script><script src="/repro-request.js" defer></script><script src="/citas.js" defer></script>
+  <script src="/vehicle-filter.js" defer></script><script src="/performance-results.js" defer></script><script src="/booking-schedule.js" defer></script><script src="/repro-wizard.js" defer></script><script src="/repro-request.js" defer></script><script src="/citas.js" defer></script>
 <script src="/fl-cursor.js" defer></script></body></html>
