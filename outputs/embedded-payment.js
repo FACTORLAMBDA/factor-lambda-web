@@ -9,7 +9,7 @@
   async function load(){try{
     if(!id||!token)throw Error('Abre el enlace de presupuesto que te ha enviado Factor Lambda.');
     quote=await request('');paymentMode=quote.paymentMode==='live'?'live':'test';$('payment-mode-banner').hidden=paymentMode==='live';$('quote-pay').textContent=paymentMode==='live'?'PAGAR DE FORMA SEGURA':'ABRIR PAGO DE PRUEBA';$('quote-body').hidden=false;$('quote-vehicle').textContent=[quote.vehicle.make,quote.vehicle.model,quote.vehicle.engine,quote.vehicle.year].filter(Boolean).join(' · ');$('quote-config').textContent=quote.config.brand+' · '+(quote.config.dyno?'Con banco · 2 h 30 min':'Sin banco · 1 h 30 min');$('quote-reference').textContent='Referencia: '+quote.id;
-    $('quote-base').textContent=money(quote.baseCents);$('quote-dyno').textContent=quote.config.dyno?money(5000):'Sin banco';$('quote-total').textContent=money(quote.totalCents);
+    $('quote-base').textContent=money(quote.baseCents);$('quote-dyno').textContent=quote.config.dyno?money(quote.config.pricing?.dynoGrossCents??5000):'Sin banco';$('quote-total').textContent=money(quote.totalCents);
     if(quote.status==='paid'){paid();return;}
     $('quote-status').textContent=quote.checkoutReady?(paymentMode==='live'?'Presupuesto preparado. Pago seguro dentro de esta página.':'Presupuesto preparado. Puedes realizar un pago de prueba dentro de esta página.'):'El formulario de pago está pendiente de configuración. Contacta con Factor Lambda.';
     if(quote.checkoutReady){const state=await request('payment-status');if(state.status==='processing'){destroy();$('quote-pay').hidden=true;checks=0;poll();}}

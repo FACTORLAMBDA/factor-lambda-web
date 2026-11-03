@@ -1,43 +1,52 @@
 (() => {
-  const $=id=>document.getElementById(id);
-  if(!$('repro-agenda'))return;
-  let carLabel='',day=null,time=null,weekOffset=0;
+  const $=id=>document.getElementById(id);if(!$('repro-agenda'))return;
+  let carLabel='',vehicle={},day=null,time=null,weekOffset=0,slotRevision=0,pricing=null,booking=null,checkout=null,challenge=null,widget=null,settings={},pollTimer;
+  const storageKey='fl-repro-payment:'+location.pathname;
+  function remember(){try{if(booking)sessionStorage.setItem(storageKey,JSON.stringify(booking));else sessionStorage.removeItem(storageKey);}catch{}}
+  const money=cents=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(cents/100);
   const clock=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'});
   const nowDay=()=>{const parts=Object.fromEntries(clock.formatToParts(new Date()).map(p=>[p.type,p.value]));return parts.year+'-'+parts.month+'-'+parts.day;};
-  const date=value=>new Date(value+'T12:00:00Z');
-  const iso=value=>value.toISOString().slice(0,10);
+  const date=value=>new Date(value+'T12:00:00Z'),iso=value=>value.toISOString().slice(0,10);
   const add=(value,days)=>{const result=date(value);result.setUTCDate(result.getUTCDate()+days);return iso(result);};
   const fmt=value=>new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(date(value));
-  const money=cents=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(cents/100);
-  const withDyno=()=>$('lead-dyno').value==='yes';
-  const bank=()=>withDyno()?({'REVO':8000,'TLR SPORT':10000}[$('lead-brand').value]??null):0;
-  function go(step){
-    for(const [key,id]of Object.entries({vehicle:'repro-selector',agenda:'repro-agenda',contact:'repro-contact',payment:'repro-payment'}))$(id).hidden=key!==step;
-    document.querySelectorAll('[data-repro-step]').forEach(node=>{if(node.dataset.reproStep===step)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});
-    const target=step==='vehicle'?$('repro-selector'):$('repro-'+step+'-title');
-    target.scrollIntoView({behavior:'smooth',block:'start'});if(target.matches('[tabindex]'))target.focus({preventScroll:true});
+  const dyno=()=>$('lead-dyno').value==='yes',brand=()=>$('lead-brand').value;
+  const bank=()=>dyno()?({'REVO':8000,'TLR SPORT':10000}[brand()]??null):0;
+  async function api(action,data,post=false){const response=await fetch('/api/repro-quotes?'+(post?'action='+action:new URLSearchParams({action,...data})),{...(post?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{}),cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error||'No se pudo completar la operación.');return result;}
+  function go(step){for(const [key,id]of Object.entries({vehicle:'repro-selector',agenda:'repro-agenda',contact:'repro-contact',payment:'repro-payment'}))$(id).hidden=key!==step;document.querySelectorAll('[data-repro-step]').forEach(node=>{if(node.dataset.reproStep===step)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});const target=step==='vehicle'?$('repro-selector'):$('repro-'+step+'-title');target.scrollIntoView({behavior:'smooth',block:'start'});if(target.matches('[tabindex]'))target.focus({preventScroll:true});}
+  function canPay(){$('repro-direct-pay').disabled=!pricing||(!booking&&!challenge)||!$('repro-direct-accept').checked||!!checkout||settings.checkout!==true;}
+  async function renderTimes(){
+    const revision=++slotRevision;$('repro-times').replaceChildren();$('repro-day-label').textContent=day?fmt(day):'Selecciona un día';if(!day)return;
+    $('repro-agenda-status').textContent='Consultando disponibilidad…';
+    try{const result=await api('direct-slots',{day,dyno:String(dyno())});if(revision!==slotRevision)return;
+      for(const slot of result.slots){const label=document.createElement('label');label.className='repro-time';const radio=document.createElement('input');radio.type='radio';radio.name='repro-time';radio.value=slot.start;radio.disabled=!slot.available;radio.checked=time===slot.start;radio.onchange=()=>{time=slot.start;$('repro-agenda-status').textContent=fmt(day)+' · '+slot.start+'–'+slot.end;};const text=document.createElement('span');text.textContent=slot.start+'–'+slot.end;label.append(radio,text);$('repro-times').append(label);}
+      $('repro-agenda-status').textContent=result.slots.some(slot=>slot.available)?'':'No quedan horas libres. Selecciona otro día.';
+    }catch(error){if(revision===slotRevision){time=null;$('repro-agenda-status').textContent=error.message;}}
   }
-  function renderTimes(){
-    $('repro-times').replaceChildren();$('repro-day-label').textContent=day?fmt(day):'Selecciona un día';
-    if(!day)return;
-    const current=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
-    const slots=window.FLBookingSchedule.reproSlots(withDyno()).filter(slot=>day!==nowDay()||slot.start>current);
-    for(const slot of slots){const label=document.createElement('label');label.className='repro-time';const radio=document.createElement('input');radio.type='radio';radio.name='repro-time';radio.value=slot.start;radio.checked=time===slot.start;radio.onchange=()=>{time=slot.start;$('repro-agenda-status').textContent=fmt(day)+' · '+slot.start+'–'+slot.end;};const text=document.createElement('span');text.textContent=slot.start+'–'+slot.end;label.append(radio,text);$('repro-times').append(label);}
-    if(!slots.length)$('repro-agenda-status').textContent='No quedan horas en este día. Selecciona otra fecha.';
-  }
-  function renderWeek(){
-    const today=nowDay(),weekday=date(today).getUTCDay();const monday=add(today,(weekday===0?-6:1-weekday)+weekOffset*7);
-    $('repro-week-label').textContent=new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric',timeZone:'UTC'}).format(date(monday));$('repro-week-back').disabled=weekOffset===0;
-    $('repro-week').replaceChildren();
-    for(let i=0;i<5;i++){const value=add(monday,i),button=document.createElement('button');button.type='button';button.disabled=value<today;button.setAttribute('aria-pressed',String(value===day));button.textContent=new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(date(value));button.onclick=()=>{day=value;time=null;$('repro-agenda-status').textContent='';renderWeek();renderTimes();};$('repro-week').append(button);}
-  }
-  function serviceChanged(){time=null;$('repro-agenda-status').textContent='';const cost=bank();$('repro-bank-price').textContent=cost===null?'Suplemento de banco pendiente de confirmar según el preparador.':cost?money(cost)+' · IVA incluido':'Sin suplemento de banco';renderTimes();}
-  $('repro-service-placement').append($('repro-service-fields'));
-  $('lead-brand').onchange=serviceChanged;$('lead-dyno').onchange=serviceChanged;
-  $('repro-week-back').onclick=()=>{weekOffset=Math.max(0,weekOffset-1);renderWeek();};$('repro-week-next').onclick=()=>{weekOffset++;renderWeek();};
-  $('agenda-back').onclick=()=>go('vehicle');
-  $('repro-agenda-form').onsubmit=event=>{event.preventDefault();if(!day||!time||day<nowDay()){$('repro-agenda-status').textContent='Selecciona un día y una hora.';return;}$('repro-contact-appointment').textContent=fmt(day)+' · '+time+' · '+$('lead-brand').value+' · '+(withDyno()?'2 h 30 min':'1 h 30 min');go('contact');};
-  $('lead-back').onclick=()=>go('agenda');$('payment-back').onclick=()=>go('contact');
-  $('repro-lead-form').onsubmit=event=>{event.preventDefault();const list=$('repro-payment-summary');list.replaceChildren();for(const [label,value]of [['Vehículo',carLabel],['Cita seleccionada',fmt(day)+' · '+time],['Preparador',$('lead-brand').value],['Duración',withDyno()?'2 h 30 min':'1 h 30 min'],['Banco de potencia',bank()===null?'Pendiente de confirmar':bank()?money(bank())+' IVA incluido':'Sin banco'],['Titular',$('lead-name').value.trim()],['Correo de confirmación',$('lead-email').value.trim()]]){const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;row.append(dt,dd);list.append(row);}go('payment');};
-  window.FLReproWizard={open(label){carLabel=label;day=null;time=null;weekOffset=0;$('agenda-car-summary').textContent=label;$('repro-car-summary').textContent=label;renderWeek();serviceChanged();go('agenda');}};
+  function renderWeek(){const today=nowDay(),weekday=date(today).getUTCDay(),monday=add(today,(weekday===0?-6:1-weekday)+weekOffset*7);$('repro-week-label').textContent=new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric',timeZone:'UTC'}).format(date(monday));$('repro-week-back').disabled=weekOffset===0;$('repro-week-next').disabled=weekOffset>=25;$('repro-week').replaceChildren();for(let i=0;i<5;i++){const value=add(monday,i),button=document.createElement('button');button.type='button';button.disabled=value<today||value>add(today,180);button.setAttribute('aria-pressed',String(value===day));button.textContent=new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(date(value));button.onclick=()=>{day=value;time=null;renderWeek();renderTimes();};$('repro-week').append(button);}}
+  function serviceChanged(){pricing=null;time=null;const cost=bank();$('repro-bank-price').textContent=cost===null?'Suplemento de banco pendiente de confirmar según el preparador.':cost?money(cost)+' · IVA incluido':'Sin suplemento de banco';renderTimes();}
+  function row(label,value){const node=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;node.append(dt,dd);return node;}
+  function summary(){const list=$('repro-payment-summary');list.replaceChildren();for(const [label,value]of [['Vehículo',carLabel],['Cita seleccionada',fmt(day)+' · '+time],['Preparador',brand()],['Duración',dyno()?'2 h 30 min':'1 h 30 min'],['Titular',$('lead-name').value.trim()],['Correo de confirmación',$('lead-email').value.trim()]])list.append(row(label,value));if(pricing)list.append(row('Reprogramación sin IVA',money(pricing.softwareNetCents)),row('IVA reprogramación · 21 %',money(pricing.softwareVatCents)),row('Banco · IVA incluido',money(pricing.dynoGrossCents)),row('TOTAL A PAGAR · IVA incluido',money(pricing.totalCents)));}
+  $('repro-service-placement').append($('repro-service-fields'));$('lead-brand').onchange=serviceChanged;$('lead-dyno').onchange=serviceChanged;
+  $('repro-week-back').onclick=()=>{weekOffset=Math.max(0,weekOffset-1);renderWeek();};$('repro-week-next').onclick=()=>{weekOffset++;renderWeek();};$('agenda-back').onclick=()=>go('vehicle');
+  $('repro-agenda-form').onsubmit=event=>{event.preventDefault();if(!day||!time||day<nowDay()){$('repro-agenda-status').textContent='Selecciona un día y una hora disponibles.';return;}$('repro-contact-appointment').textContent=fmt(day)+' · '+time+' · '+brand()+' · '+(dyno()?'2 h 30 min':'1 h 30 min');go('contact');};
+  $('lead-back').onclick=()=>go('agenda');$('payment-back').onclick=async()=>{try{if(booking){await api('direct-cancel',{id:booking.id,token:booking.token},true);clearTimeout(pollTimer);checkout?.destroy();checkout=null;booking=null;remember();$('repro-direct-pay').hidden=false;}go('contact');}catch(error){$('repro-payment-status').textContent=error.message;}};
+  $('repro-lead-form').onsubmit=async event=>{event.preventDefault();pricing=null;summary();go('payment');$('repro-payment-status').textContent='Calculando tarifa oficial…';canPay();try{pricing=await api('direct-price',{generationId:vehicle.generationId||'',engineIndex:String(vehicle.engineIndex??''),stage:vehicle.stage||'Stage 1',brand:brand(),dyno:String(dyno())});summary();$('repro-payment-status').textContent='El total se comprobará de nuevo al abrir Stripe. La hora quedará bloqueada durante el pago.';}catch(error){$('repro-payment-status').textContent=error.message;}canPay();};
+  $('repro-direct-accept').onchange=canPay;
+  async function script(src){await new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=src;node.onload=resolve;node.onerror=()=>{node.remove();reject(Error('No se pudo cargar el servicio de pago. Revisa la conexión.'));};document.head.append(node);});}
+  async function poll(){clearTimeout(pollTimer);try{const state=await api('payment-status',{id:booking.id,token:booking.token});if(state.status==='paid'){try{sessionStorage.removeItem(storageKey);}catch{}$('repro-payment-status').textContent='Pago y cita confirmados. Recibirás un correo con la fecha y hora. Para cambios o anulación: flgarage@factorlambda.com.';$('repro-direct-pay').hidden=true;return;}if(state.status==='expired'){$('repro-payment-status').textContent='El pago ha caducado. La hora se liberará al verificar la caducidad; no se ha confirmado la cita.';return;}$('repro-payment-status').textContent='Esperando la confirmación del pago por el servidor. No repitas el pago.';pollTimer=setTimeout(poll,3000);}catch(error){$('repro-payment-status').textContent=error.message;pollTimer=setTimeout(poll,10000);}}
+  $('repro-direct-pay').onclick=async()=>{
+    if(!pricing||!$('repro-direct-accept').checked||checkout)return;$('repro-direct-pay').disabled=true;
+    try{if(!booking){if(!challenge)throw Error('Completa la verificación.');booking=await api('direct-booking',{...vehicle,name:$('lead-name').value.trim(),email:$('lead-email').value.trim(),phone:$('lead-phone').value.trim(),notes:$('lead-notes').value.trim(),emailConsent:$('lead-email-consent').checked,brand:brand(),dyno:dyno(),day,time,accepted:true,challenge,expectedTotalCents:pricing.totalCents},true);remember();$('payment-back').textContent='CAMBIAR DATOS';pricing=booking.pricing;summary();}
+      const result=await api('checkout',{id:booking.id,token:booking.token,accepted:true},true);
+      if(result.mode!==booking.mode||!new RegExp('^pk_'+booking.mode+'_').test(result.publishableKey))throw Error('La sesión pertenece a otro entorno de pago.');
+      if(!window.Stripe)await script('https://js.stripe.com/endive/stripe.js');
+      checkout=await window.Stripe(result.publishableKey).createEmbeddedCheckoutPage({fetchClientSecret:async()=>result.clientSecret,onComplete:()=>{checkout?.destroy();checkout=null;$('repro-direct-pay').hidden=true;poll();}});
+      checkout.mount('#repro-direct-checkout');$('repro-direct-pay').hidden=true;$('repro-payment-status').textContent=booking.mode==='test'?'Modo de prueba: no se realizan cobros reales.':'Pago seguro. La cita se confirmará tras verificar el cobro.';
+    }catch(error){$('repro-payment-status').textContent=error.message;canPay();}
+    finally{challenge=null;if(window.turnstile&&widget!==null)window.turnstile.reset(widget);canPay();}
+  };
+  api('config',{}).then(async result=>{settings=result;canPay();if(!result.enabled)return;window.flDirectVerification=()=>{widget=window.turnstile.render('#repro-direct-verification',{sitekey:result.siteKey,callback:value=>{challenge=value;canPay();},'expired-callback':()=>{challenge=null;canPay();}});};await script('https://challenges.cloudflare.com/turnstile/v0/api.js?onload=flDirectVerification&render=explicit');}).catch(error=>{$('repro-payment-status').textContent=error.message;});
+  window.FLReproWizard={open(label,selection){carLabel=label;vehicle=selection;day=null;time=null;weekOffset=0;pricing=null;booking=null;$('agenda-car-summary').textContent=label;$('repro-car-summary').textContent=label;renderWeek();serviceChanged();go('agenda');}};
+  window.addEventListener('pagehide',()=>{clearTimeout(pollTimer);checkout?.destroy();});
+  (async()=>{let saved;try{saved=JSON.parse(sessionStorage.getItem(storageKey)||'null');}catch{}if(!saved?.id||!saved?.token)return;try{const q=await api('',{id:saved.id,token:saved.token});if(q.config.flow!=='direct-v1')return;booking=saved;pricing=q.config.pricing;day=q.config.appointment.day;time=q.config.appointment.time;carLabel=[q.vehicle.make,q.vehicle.model,q.vehicle.engine].filter(Boolean).join(' · ');vehicle=q.vehicle;$('lead-brand').value=q.config.brand;$('lead-dyno').value=q.config.dyno?'yes':'no';$('lead-name').value=q.name;$('payment-back').textContent='CAMBIAR DATOS';summary();go('payment');$('repro-payment-status').textContent='Reserva recuperada. Puedes continuar el pago sin crear otra operación.';canPay();const state=await api('payment-status',{id:booking.id,token:booking.token});if(state.status==='paid'||state.status==='processing')poll();}catch(error){$('repro-payment-status').textContent=error.message;}})();
 })();
