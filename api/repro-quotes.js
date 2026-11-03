@@ -7,6 +7,7 @@ module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const 
  if(req.method==='GET'&&url.searchParams.get('action')==='direct-price')return res.status(200).json(await service.directPrice({generationId:url.searchParams.get('generationId'),engineIndex:Number(url.searchParams.get('engineIndex')),stage:url.searchParams.get('stage'),brand:url.searchParams.get('brand'),dyno:url.searchParams.get('dyno')==='true'}));
  if(req.method==='GET'&&url.searchParams.get('action')==='direct-slots')return res.status(200).json(await service.directSlots(url.searchParams.get('day'),url.searchParams.get('dyno')==='true'));
  if(req.method==='GET'&&url.searchParams.get('action')==='list')return res.status(200).json(await service.listQuotes(req));
+ if(req.method==='GET'&&url.searchParams.get('action')==='agenda')return res.status(200).json(await service.listAgenda(req,url.searchParams.get('from'),url.searchParams.get('to')));
  if(req.method==='GET'&&url.searchParams.get('action')==='payment-status')return res.status(200).json(await service.checkoutStatus(url.searchParams.get('id'),url.searchParams.get('token')));
  if(req.method==='GET')return res.status(200).json(service.quoteView(await service.publicQuote(url.searchParams.get('id'),url.searchParams.get('token'))));
  if(req.method!=='POST')return res.status(405).json({error:'Método no permitido.'});
