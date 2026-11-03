@@ -5,7 +5,7 @@
  const ids=['repro-make','repro-model','tlr-fuel','repro-stage'];
  $('manual-year').max=String(new Date().getFullYear()+1);
  const options=(id,values,label)=>{const el=$(id);el.replaceChildren(new Option(label,''));values.forEach(v=>el.add(new Option(v.label,v.value)));el.disabled=manual||!values.length;};
- const sourceLink=()=>{const a=document.createElement('a');a.href=generation.sourceUrl;a.target='_blank';a.rel='noopener';a.textContent='Ver referencia de motores';return a;};
+ const sourceLink=()=>document.createTextNode(generation.period);
 
  function showReference(result){$('repro-results').hidden=manual;window.FLPerformance.render($('repro-results'),{...result,sourceUrl:result.sourceUrl||generation.sourceUrl});}
 

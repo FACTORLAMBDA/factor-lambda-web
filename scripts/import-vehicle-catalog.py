@@ -145,4 +145,5 @@ if __name__ == '__main__':
         (public_dir / filename).write_text(json.dumps({'generations': entries}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
         brands.append({'value': make, 'label': entries[0].get('makeLabel', make.upper()), 'url': '/vehicle-catalog/' + filename, 'models': len({g['model'] for g in entries})})
     (public_dir / 'index.json').write_text(json.dumps({'checkedAt': catalog['checkedAt'], 'brands': brands, 'sourceFile': args.workbook.name}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    subprocess.run(['node', str(Path(__file__).with_name('remove-public-catalog-links.cjs'))], check=True)
     print(json.dumps({k: len(v) if isinstance(v, list) else v for k, v in report.items()}, ensure_ascii=True))

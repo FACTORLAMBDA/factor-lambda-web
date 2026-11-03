@@ -5,5 +5,5 @@ assert.deepEqual([alfa.references[0].referencePower,alfa.references[0].stockTorq
 const iii=leon.find(g=>g.id==='leon-5f');assert.equal(engines(iii,null,'Gasolina').length,11);assert.equal(engines(iii,null,'Diesel').length,5);assert.equal(engines(iii,null,'Gas').length,1);
 const fl=leon.find(g=>g.id==='leon-5f-fl');assert.equal(engines(fl,2017,'Gasolina').some(({engine:e})=>e[1]==='1.5 TSI'),false);assert.equal(engines(fl,2019,'Gasolina').some(({engine:e})=>e[1]==='1.5 TSI'),true);
 assert.equal(engines(leon.find(g=>g.id==='leon-kl'),2022,'Diesel').length,2);assert.equal(engines(leon.find(g=>g.id==='leon-kl'),2022).some(({engine:e})=>e[1]==='1.9 TDI'),false);
-for(const g of generations){assert.ok(g.engines.length);assert.ok(/^https:\/\/www\.br-performance\.(com|fr)\//.test(g.sourceUrl));for(const e of g.engines)assert.ok(Number.isFinite(e[2])&&e[2]>0);}
+for(const g of generations){assert.ok(g.engines.length);assert.equal(g.sourceUrl,undefined);for(const e of g.engines)assert.ok(Number.isFinite(e[2])&&e[2]>0);}
 console.log('PASS: six Leon generations, generation/year/fuel filter, no old diesel in KL and source metadata.');
