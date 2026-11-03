@@ -27,7 +27,7 @@ process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
   await page.selectOption('#repro-make','seat');await page.waitForFunction(()=>!document.getElementById('repro-model').disabled);await page.selectOption('#repro-model',{label:'Leon'});
   await page.screenshot({path:'work/direct-before-select.png',fullPage:true});
   await page.locator('#repro-generations button').first().click();await page.locator('.engine-row input').first().check();await page.locator('#repro-selector button[type=submit]').click();
-  assert.ok(await page.locator('#repro-agenda').isVisible());await page.selectOption('#lead-brand','Sin preferencia');assert.match(await page.locator('#repro-bank-price').innerText(),/pendiente/);
+  assert.ok(await page.locator('#repro-agenda').isVisible());assert.equal(await page.locator('#lead-brand').inputValue(),'REVO');await page.selectOption('#lead-brand','Sin preferencia');assert.match(await page.locator('#repro-bank-price').innerText(),/pendiente/);
   await page.selectOption('#lead-brand','REVO');assert.match(await page.locator('#repro-bank-price').innerText(),/80/);await page.selectOption('#lead-brand','TLR SPORT');assert.match(await page.locator('#repro-bank-price').innerText(),/100/);
   await page.locator('#repro-week-next').click();await page.locator('#repro-week button:not([disabled])').first().click();await page.locator('#repro-times input:not([disabled])').first().check();assert.equal(await page.locator('#repro-times input:disabled').count(),1);
   await page.locator('#repro-agenda-form button[type=submit]').click();await page.fill('#lead-name','Prueba local');await page.fill('#lead-phone','600000000');await page.fill('#lead-email','test@example.com');await page.check('#lead-email-consent');

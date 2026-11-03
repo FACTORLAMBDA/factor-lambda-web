@@ -12,6 +12,9 @@
     const details=document.createElement('p');
     details.textContent=['Referencia: '+q.id,new Date(q.created_at).toLocaleString('es-ES',{timeZone:'Europe/Madrid'}),[q.vehicle.make,q.vehicle.model,q.vehicle.engine,q.vehicle.year].filter(Boolean).join(' · '),'Preferencia: '+q.config.brand,q.config.dyno?'Banco +50 € IVA incluido':'Sin banco','Email: '+q.customer.email,'Teléfono: '+q.customer.phone,q.customer.whatsappConsent?'Ha solicitado presupuesto por email y WhatsApp':'Ha solicitado presupuesto por email','Consulta: '+q.config.notes].join('\n');
     item.append(heading,details);
+    if(q.status!=='paid'&&q.config.flow!=='direct-v1'){
+      const remove=document.createElement('button');remove.type='button';remove.textContent='Borrar presupuesto';remove.onclick=async()=>{const reason=prompt('Motivo para borrar este presupuesto:');if(!reason?.trim()||!confirm('¿Retirar este presupuesto del panel? Se conservará su historial.'))return;remove.disabled=true;try{await call('/api/repro-quotes?action=admin-action',{method:'POST',body:JSON.stringify({id:q.id,action:'archive',reason,confirmed:true})});await refresh();}catch(e){$('admin-status').textContent=e.message;remove.disabled=false;}};item.append(remove);
+    }
     if(!['pending','send_failed'].includes(q.status)){
       if(q.total_cents){const total=document.createElement('p');total.textContent='Total aprobado: '+money(q.total_cents)+' IVA incluido';item.append(total);}return item;
     }
@@ -38,7 +41,7 @@
       $('admin-status').textContent='Consultando solicitudes…';
       const quotes=await call('/api/repro-quotes?action=list');
       $('admin-login').hidden=true;$('admin-refresh').hidden=false;$('admin-logout').hidden=false;$('admin-password').value='';$('admin-workspace').hidden=false;window.FLAdminAgenda.load(call);
-      $('admin-quotes').replaceChildren(...quotes.map(renderQuote));$('admin-status').textContent='Sesión privada iniciada.';
+      $('admin-quotes').replaceChildren(...quotes.filter(q=>!q.config.adminArchived).map(renderQuote));$('admin-status').textContent='Sesión privada iniciada.';
     }catch(e){$('admin-status').textContent=e.message;}
   }
   $('admin-login').onsubmit=e=>{e.preventDefault();password=$('admin-password').value;refresh();};$('admin-refresh').onclick=refresh;

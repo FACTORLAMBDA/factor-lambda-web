@@ -19,6 +19,17 @@ const {PGlite}=require(path.join(pkg,'dist/index.cjs'));const {btree_gist}=requi
  await assert.rejects(()=>hold('12:00','14:30'));
  await assert.rejects(()=>hold('14:00','16:30','test',{...config,pricing:{...pricing,dynoGrossCents:5000,totalCents:53400}}));
  const perms=await db.query("select has_function_privilege('anon','public.fl_repro_hold(uuid,uuid,jsonb,jsonb,jsonb,text,timestamptz,timestamptz)','execute') as anon, has_function_privilege('service_role','public.fl_repro_hold(uuid,uuid,jsonb,jsonb,jsonb,text,timestamptz,timestamptz)','execute') as service");assert.deepEqual(perms.rows[0],{anon:false,service:true});
+ const adminSql=fs.readFileSync('database/admin-booking-actions.sql','utf8');await db.exec(adminSql);await db.exec(adminSql);
+ await db.query("update public.fl_quote_requests set status='paid' where id=$1",[replacement]);
+ const appointment={day,time:'14:00',endTime:'16:30',start:day+'T13:00:00Z',end:day+'T15:30:00Z',durationMinutes:150,timeZone:'Europe/Madrid'};
+ const instants=await db.query("select ($1::timestamp at time zone 'Europe/Madrid') as s,($2::timestamp at time zone 'Europe/Madrid') as e",[day+' 14:00',day+' 16:30']);appointment.start=instants.rows[0].s.toISOString();appointment.end=instants.rows[0].e.toISOString();
+ await db.query('select public.fl_repro_admin_action($1,$2,$3,$4)',[replacement,'move',appointment,'Client request']);
+ assert.equal((await db.query('select config from public.fl_quote_requests where id=$1',[replacement])).rows[0].config.appointment.time,'14:00');
+ await assert.rejects(()=>db.query('select public.fl_repro_admin_action($1,$2,$3,$4)',[replacement,'archive',null,'Test']));
+ await db.query('select public.fl_repro_admin_action($1,$2,$3,$4)',[replacement,'cancel',null,'Client request']);
+ assert.equal((await db.query('select state from public.fl_repro_bookings where quote_id=$1',[replacement])).rows[0].state,'released');
+ assert.equal((await db.query('select status from public.fl_quote_requests where id=$1',[replacement])).rows[0].status,'paid');
+ await assert.rejects(()=>db.query('select public.fl_repro_admin_action($1,$2,$3,$4)',[replacement,'move',appointment,'Test']));
  await db.exec('set role anon');await assert.rejects(()=>db.query('select * from public.fl_repro_bookings'));await db.exec('reset role');
  console.log('PASS PostgreSQL: migration twice, atomic quote+hold rollback on collision, adjacent slots, test/live isolation, create/cancel race guard, confirmed booking retained, shift/price checks, anonymous access denied. Local test database only.');
 }finally{await db.close();}})().catch(error=>{console.error(error);process.exitCode=1;});
