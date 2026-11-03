@@ -1,6 +1,7 @@
 (() => {
   const $=id=>document.getElementById(id);if(!$('repro-agenda'))return;
   let carLabel='',vehicle={},day=null,time=null,weekOffset=0,slotRevision=0,pricing=null,booking=null,checkout=null,challenge=null,widget=null,settings={},pollTimer;
+  let paying=false;
   const storageKey='fl-repro-payment:'+location.pathname;
   function remember(){try{if(booking)sessionStorage.setItem(storageKey,JSON.stringify(booking));else sessionStorage.removeItem(storageKey);}catch{}}
   const money=cents=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(cents/100);
@@ -13,7 +14,7 @@
   const bank=()=>dyno()?({'REVO':8000,'TLR SPORT':10000}[brand()]??null):0;
   async function api(action,data,post=false){const response=await fetch('/api/repro-quotes?'+(post?'action='+action:new URLSearchParams({action,...data})),{...(post?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{}),cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error||'No se pudo completar la operación.');return result;}
   function go(step){for(const [key,id]of Object.entries({vehicle:'repro-selector',agenda:'repro-agenda',contact:'repro-contact',payment:'repro-payment'}))$(id).hidden=key!==step;document.querySelectorAll('[data-repro-step]').forEach(node=>{if(node.dataset.reproStep===step)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});const target=step==='vehicle'?$('repro-selector'):$('repro-'+step+'-title');target.scrollIntoView({behavior:'smooth',block:'start'});if(target.matches('[tabindex]'))target.focus({preventScroll:true});}
-  function canPay(){$('repro-direct-pay').disabled=!pricing||(!booking&&!challenge)||!$('repro-direct-accept').checked||!!checkout||settings.checkout!==true;}
+  function canPay(){$('repro-direct-pay').disabled=paying||!pricing||(!booking&&!challenge)||!$('repro-direct-accept').checked||!!checkout||settings.checkout!==true;$('payment-back').disabled=paying;}
   async function renderTimes(){
     const revision=++slotRevision;$('repro-times').replaceChildren();$('repro-day-label').textContent=day?fmt(day):'Selecciona un día';if(!day)return;
     $('repro-agenda-status').textContent='Consultando disponibilidad…';
@@ -35,7 +36,7 @@
   async function script(src){await new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=src;node.onload=resolve;node.onerror=()=>{node.remove();reject(Error('No se pudo cargar el servicio de pago. Revisa la conexión.'));};document.head.append(node);});}
   async function poll(){clearTimeout(pollTimer);try{const state=await api('payment-status',{id:booking.id,token:booking.token});if(state.status==='paid'){try{sessionStorage.removeItem(storageKey);}catch{}$('repro-payment-status').textContent='Pago y cita confirmados. Recibirás un correo con la fecha y hora. Para cambios o anulación: flgarage@factorlambda.com.';$('repro-direct-pay').hidden=true;return;}if(state.status==='expired'){$('repro-payment-status').textContent='El pago ha caducado. La hora se liberará al verificar la caducidad; no se ha confirmado la cita.';return;}$('repro-payment-status').textContent='Esperando la confirmación del pago por el servidor. No repitas el pago.';pollTimer=setTimeout(poll,3000);}catch(error){$('repro-payment-status').textContent=error.message;pollTimer=setTimeout(poll,10000);}}
   $('repro-direct-pay').onclick=async()=>{
-    if(!pricing||!$('repro-direct-accept').checked||checkout)return;$('repro-direct-pay').disabled=true;
+    if(paying||!pricing||!$('repro-direct-accept').checked||checkout)return;paying=true;canPay();
     try{if(!booking){if(!challenge)throw Error('Completa la verificación.');booking=await api('direct-booking',{...vehicle,name:$('lead-name').value.trim(),email:$('lead-email').value.trim(),phone:$('lead-phone').value.trim(),notes:$('lead-notes').value.trim(),emailConsent:$('lead-email-consent').checked,brand:brand(),dyno:dyno(),day,time,accepted:true,challenge,expectedTotalCents:pricing.totalCents},true);remember();$('payment-back').textContent='CAMBIAR DATOS';pricing=booking.pricing;summary();}
       const result=await api('checkout',{id:booking.id,token:booking.token,accepted:true},true);
       if(result.mode!==booking.mode||!new RegExp('^pk_'+booking.mode+'_').test(result.publishableKey))throw Error('La sesión pertenece a otro entorno de pago.');
@@ -43,7 +44,7 @@
       checkout=await window.Stripe(result.publishableKey).createEmbeddedCheckoutPage({fetchClientSecret:async()=>result.clientSecret,onComplete:()=>{checkout?.destroy();checkout=null;$('repro-direct-pay').hidden=true;poll();}});
       checkout.mount('#repro-direct-checkout');$('repro-direct-pay').hidden=true;$('repro-payment-status').textContent=booking.mode==='test'?'Modo de prueba: no se realizan cobros reales.':'Pago seguro. La cita se confirmará tras verificar el cobro.';
     }catch(error){$('repro-payment-status').textContent=error.message;canPay();}
-    finally{challenge=null;if(window.turnstile&&widget!==null)window.turnstile.reset(widget);canPay();}
+    finally{paying=false;challenge=null;if(window.turnstile&&widget!==null)window.turnstile.reset(widget);canPay();}
   };
   api('config',{}).then(async result=>{settings=result;canPay();if(!result.enabled)return;window.flDirectVerification=()=>{widget=window.turnstile.render('#repro-direct-verification',{sitekey:result.siteKey,callback:value=>{challenge=value;canPay();},'expired-callback':()=>{challenge=null;canPay();}});};await script('https://challenges.cloudflare.com/turnstile/v0/api.js?onload=flDirectVerification&render=explicit');}).catch(error=>{$('repro-payment-status').textContent=error.message;});
   window.FLReproWizard={open(label,selection){carLabel=label;vehicle=selection;day=null;time=null;weekOffset=0;pricing=null;booking=null;$('agenda-car-summary').textContent=label;$('repro-car-summary').textContent=label;renderWeek();serviceChanged();go('agenda');}};

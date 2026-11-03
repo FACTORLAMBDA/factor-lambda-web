@@ -2,7 +2,8 @@ const assert=require('node:assert/strict');const {createHmac}=require('node:cryp
 const service=require('../lib/quote-service');const reservations=require('../lib/repro-reservations');const tariffs=require('../lib/repro-tariffs');const tlr=require('../lib/tlr-catalog');
 const oldFetch=global.fetch,oldLoad=tlr.load;
 Object.assign(process.env,{QUOTES_ENABLED:'true',SUPABASE_URL:'https://mock.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'sb_secret_mock',QUOTE_ADMIN_PASSWORD:'mock',QUOTE_LINK_SECRET:'mock-secret',TURNSTILE_SECRET_KEY:'mock',TURNSTILE_SITE_KEY:'mock',STRIPE_MODE:'test',STRIPE_CHECKOUT_ENABLED:'true',STRIPE_SECRET_KEY:'rk_test_mock',STRIPE_PUBLISHABLE_KEY:'pk_test_mock',STRIPE_WEBHOOK_SECRET:'whsec_mock',RESEND_API_KEY:'mock',QUOTE_EMAIL_FROM:'Factor Lambda <test@example.com>'});
-const response=data=>({ok:true,status:200,json:async()=>structuredClone(data)});
+const response=data=>({ok:true,status:200,json:async()=>structuredClone(data),text:async()=>JSON.stringify(data)});
+const emptyResponse=()=>({ok:true,status:204,json:async()=>{throw Error('Empty body is not JSON');},text:async()=>{throw Error('204 body must not be read');}});
 let q,held=false,busy=[],mailCount=0,sessions=0,sessionStatus='open',confirmed=false;
 tlr.load=async params=>{
  if(params.has('potencia_id'))return {result:{stockPower:110,referencePower:130,generation:'5F',launch:'2012',priceNetCents:40000,sourceUrl:'https://tlrsport.es/tlr-tarifas-marca/'}};
@@ -19,9 +20,9 @@ global.fetch=async(url,options={})=>{
    if(name==='fl_repro_pending')return response([]);
    if(name==='fl_repro_busy')return response(busy);
    if(name==='fl_repro_hold'){assert.equal(data.p_config.pricing.totalCents,58400);assert.equal(data.p_config.pricing.dynoGrossCents,10000);held=true;q={id:data.p_id,version:data.p_version,customer:data.p_customer,vehicle:data.p_vehicle,config:data.p_config,stripe_mode:data.p_mode,status:'sent',total_cents:58400,base_cents:48400,notification_status:'pending'};return response(q);}
-   if(name==='fl_repro_begin_checkout'){if(!held)throw Error('Not held');return response(null);}
-   if(name==='fl_repro_end_checkout')return response(null);
-   if(name==='fl_repro_transition'){if(data.p_state==='confirmed'){assert.ok(held);confirmed=true;}if(data.p_state==='released')held=false;return response(null);}
+   if(name==='fl_repro_begin_checkout'){if(!held)throw Error('Not held');return emptyResponse();}
+   if(name==='fl_repro_end_checkout')return emptyResponse();
+   if(name==='fl_repro_transition'){if(data.p_state==='confirmed'){assert.ok(held);confirmed=true;}if(data.p_state==='released')held=false;return emptyResponse();}
    throw Error('Unexpected RPC '+name);
   }
   if(parsed.searchParams.get('notification_status')==='eq.pending'&&q.notification_status!=='pending')return response([]);
