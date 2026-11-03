@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const {totals,netPrice}=require('../lib/repro-pricing');
+assert.deepEqual(totals(40000,'TLR SPORT',true),{currency:'eur',country:'ES',vatPercent:21,softwareNetCents:40000,softwareVatCents:8400,softwareGrossCents:48400,dynoGrossCents:10000,totalCents:58400});
+assert.equal(totals(40000,'REVO',true).totalCents,56400);
+assert.equal(totals(40000,'TLR SPORT',false).totalCents,48400);
+assert.equal(totals(10001,'REVO',true).totalCents,20101);
+for(const value of [0,-1,1.5,NaN,Infinity,'400'])assert.throws(()=>totals(value,'REVO',true));
+assert.throws(()=>totals(40000,'Sin preferencia',true));
+assert.throws(()=>totals(40000,'REVO','true'));
+assert.equal(netPrice('400'),40000);assert.equal(netPrice('400,50 €'),40050);
+for(const value of ['$400','£400','Desde 400','400 + IVA','',null,'-400','1,234.50'])assert.equal(netPrice(value),null);
+console.log('PASS exact EUR/Spain tariff arithmetic, software VAT 21%, gross dyno REVO80/TLR100, no double VAT and invalid/foreign tariff rejection.');
