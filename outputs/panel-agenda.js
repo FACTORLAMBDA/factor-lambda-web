@@ -26,7 +26,7 @@
     $('agenda-detail').showModal();
   }
   function render(){const mode=$('agenda-mode').value,filter=$('agenda-filter').value,search=$('agenda-search').value.toLocaleLowerCase('es');
-    const selected=rows.filter(q=>q.stripe_mode===mode&&(filter==='all'||state(q)===filter||(filter==='unpaid'&&q.status!=='paid'&&!q.config.adminCancelled))&&[q.customer.name,q.customer.email,q.customer.phone,q.vehicle.make,q.vehicle.model,q.vehicle.engine,q.id].join(' ').toLocaleLowerCase('es').includes(search));
+    const selected=rows.filter(q=>!q.config.adminArchived&&q.stripe_mode===mode&&(filter==='all'||state(q)===filter||(filter==='unpaid'&&q.status!=='paid'&&!q.config.adminCancelled))&&[q.customer.name,q.customer.email,q.customer.phone,q.vehicle.make,q.vehicle.model,q.vehicle.engine,q.id].join(' ').toLocaleLowerCase('es').includes(search));
     $('agenda-totals').textContent=selected.length+' citas · '+selected.filter(q=>state(q)==='paid').length+' pagadas · Cobrado: '+money(selected.filter(q=>state(q)==='paid').reduce((sum,q)=>sum+q.total_cents,0));
     const grid=$('agenda-grid');grid.replaceChildren();
     for(let i=0;i<7;i++){const day=add(start,i),section=node('section','');section.className='agenda-day'+(day===today?' today':'');section.append(node('h3',new Intl.DateTimeFormat('es-ES',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(day+'T12:00:00Z'))));
