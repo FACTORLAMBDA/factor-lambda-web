@@ -8,6 +8,7 @@
   const labels={paid:'Pago confirmado · Cita confirmada',pending:'Retención provisional · Sin cita confirmada',released:'Reserva liberada',cancelled:'Cita anulada'};
   function detail(q){const body=$('agenda-detail-body');body.replaceChildren();const dl=document.createElement('dl');
     const fields=[['Cliente',q.customer.name],['Teléfono',q.customer.phone],['Email',q.customer.email],['Vehículo',[q.vehicle.make,q.vehicle.model,q.vehicle.engine].filter(Boolean).join(' · ')],['Servicio','Reprogramación · '+q.config.brand],['Fecha y hora',q.config.appointment.day+' · '+q.config.appointment.time+'–'+q.config.appointment.endTime],['Duración',(q.config.durationMinutes||q.config.appointment.durationMinutes)+' minutos'],['Banco de potencia',q.config.dyno?'Sí':'No'],['Total IVA incluido',money(q.total_cents)],['Estado',labels[state(q)]],['Correo de confirmación',q.notification_status==='sent'?'Enviado':q.status==='paid'?'Pendiente de envío':'Pendiente de pago'],['Entorno',q.stripe_mode==='live'?'Real':'Prueba'],['Notas',q.config.notes||'Sin notas'],['Referencia',q.id]];
+    if(q.config.serviceKind==='consultation'){const s=q.config.consultation;fields[4][1]=s.label+' · '+s.professionalName;fields[7][1]='No aplica';fields.push(['Motivo',s.topicLabel],['Matrícula',q.vehicle.plate]);}
     for(const [label,value]of fields){dl.append(node('dt',label),node('dd',value||'—'));}body.append(dl);
     if(q.stripe_session_id){const a=node('a','Ver operación en Stripe');a.href='https://dashboard.stripe.com/'+(q.stripe_mode==='test'?'test/':'')+'search?query='+encodeURIComponent(q.stripe_session_id);a.target='_blank';a.rel='noopener noreferrer';body.append(a);}
     const contact=node('div','');contact.className='booking-navigation';
@@ -18,7 +19,7 @@
       try{const result=await call('/api/repro-quotes?action=admin-action',{method:'POST',body:JSON.stringify({id:q.id,action,confirmed:true,reason,...extra})});message.textContent=result.message+' '+result.notification;await load();}catch(e){message.textContent=e.message;for(const b of actions.querySelectorAll('button'))b.disabled=false;}}
     if(state(q)==='paid'){
       const dateInput=document.createElement('input');dateInput.type='date';dateInput.min=today;dateInput.value=q.config.appointment.day;dateInput.setAttribute('aria-label','Nueva fecha');
-      const timeInput=document.createElement('select');timeInput.setAttribute('aria-label','Nueva hora');for(const slot of window.FLBookingSchedule.reproSlots(q.config.dyno))timeInput.add(new Option(slot.start+'–'+slot.end,slot.start));
+      const timeInput=document.createElement('select');timeInput.setAttribute('aria-label','Nueva hora');const slots=q.config.serviceKind==='consultation'?window.FLConsultation.slots(q.config.consultation.professional):window.FLBookingSchedule.reproSlots(q.config.dyno);for(const slot of slots)timeInput.add(new Option(slot.start+'–'+slot.end,slot.start));
       const move=node('button','Mover cita');move.onclick=()=>submit('move',{day:dateInput.value,time:timeInput.value});body.append(node('h3','Cambiar fecha y hora'),dateInput,timeInput);actions.append(move);
     }
     if(['paid','pending'].includes(state(q))){const cancel=node('button','Anular cita');cancel.onclick=()=>submit('cancel');actions.append(cancel);}body.append(actions,message);

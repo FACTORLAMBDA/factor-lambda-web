@@ -18,6 +18,7 @@
   document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
   const root=document.getElementById('appointment-page');if(!root)return;
   const isRepro=root.dataset.flow==='repro';
+  if(!isRepro){const script=document.createElement('script');script.src='/consultas.js?v=1';document.head.append(script);return;}
   root.innerHTML=`
     <p class="demo-note">Vista previa · No se realizan reservas ni cobros.</p>
     <ol class="booking-progress" aria-label="Progreso"><li>1. Servicio</li><li>2. Hora</li><li>3. Detalles</li><li>4. Finalizar</li></ol>

@@ -4,6 +4,7 @@ async function body(req){if(req.body){const size=Buffer.byteLength(JSON.stringif
 module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const url=new URL(req.url,'http://localhost');try{
  if(req.method==='GET'&&url.searchParams.get('action')==='config')return res.status(200).json({enabled:!!service.configured(),checkout:service.paymentsReady(),paymentChecks:stripePayments.configuration().checks,siteKey:service.configured()?process.env.TURNSTILE_SITE_KEY:null});
  if(!service.configured())return res.status(503).json({error:'La solicitud automática está pendiente de activación. Puedes contactar con el taller por WhatsApp.'});
+ if(req.method==='GET'&&url.searchParams.get('action')==='consult-slots')return res.status(200).json(await service.consultSlots(url.searchParams.get('day'),url.searchParams.get('mode'),url.searchParams.get('topic')));
  if(req.method==='GET'&&url.searchParams.get('action')==='direct-price')return res.status(200).json(await service.directPrice({generationId:url.searchParams.get('generationId'),engineIndex:Number(url.searchParams.get('engineIndex')),stage:url.searchParams.get('stage'),brand:url.searchParams.get('brand'),dyno:url.searchParams.get('dyno')==='true'}));
  if(req.method==='GET'&&url.searchParams.get('action')==='direct-slots')return res.status(200).json(await service.directSlots(url.searchParams.get('day'),url.searchParams.get('dyno')==='true'));
  if(req.method==='GET'&&url.searchParams.get('action')==='list')return res.status(200).json(await service.listQuotes(req));
@@ -12,6 +13,7 @@ module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const 
  if(req.method==='GET')return res.status(200).json(service.quoteView(await service.publicQuote(url.searchParams.get('id'),url.searchParams.get('token'))));
  if(req.method!=='POST')return res.status(405).json({error:'Método no permitido.'});
  const data=await body(req);const action=url.searchParams.get('action');
+ if(action==='consult-booking')return res.status(201).json(await service.consultBooking(data));
  if(action==='admin-action')return res.status(200).json(await service.adminAction(req,data));
  if(action==='direct-booking')return res.status(201).json(await service.directBooking(data));
  if(action==='direct-cancel')return res.status(200).json(await service.cancelDirect(data.id,data.token));
