@@ -8,14 +8,19 @@
   }
   function renderQuote(q){
     const item=document.createElement('article');item.className='quote-admin-item';
-    const heading=document.createElement('h2');heading.textContent=q.customer.name+' · '+q.status;
+    const heading=document.createElement('h2');heading.textContent=q.customer.name+' · '+(q.config.priceFallback&&q.status==='pending'?'Presupuesto solicitado':q.status);
     const details=document.createElement('p');
-    details.textContent=['Referencia: '+q.id,new Date(q.created_at).toLocaleString('es-ES',{timeZone:'Europe/Madrid'}),[q.vehicle.make,q.vehicle.model,q.vehicle.engine,q.vehicle.year].filter(Boolean).join(' · '),'Preferencia: '+q.config.brand,q.config.dyno?'Banco +50 € IVA incluido':'Sin banco','Email: '+q.customer.email,'Teléfono: '+q.customer.phone,q.customer.whatsappConsent?'Ha solicitado presupuesto por email y WhatsApp':'Ha solicitado presupuesto por email','Consulta: '+q.config.notes].join('\n');
+    details.textContent=['Referencia: '+q.id,new Date(q.created_at).toLocaleString('es-ES',{timeZone:'Europe/Madrid'}),[q.vehicle.make,q.vehicle.model,q.vehicle.engine,q.vehicle.year].filter(Boolean).join(' · '),'Preferencia: '+q.config.brand,q.config.priceFallback?'Banco solicitado: '+(q.config.dyno?'Sí':'No'):q.config.dyno?'Banco +50 € IVA incluido':'Sin banco','Email: '+q.customer.email,'Teléfono: '+q.customer.phone,q.customer.whatsappConsent?'Ha solicitado presupuesto por email y WhatsApp':'Ha solicitado presupuesto por email','Consulta: '+q.config.notes].join('\n');
     item.append(heading,details);
     if(q.status!=='paid'){
       const remove=document.createElement('button');remove.type='button';remove.textContent='Borrar presupuesto';remove.onclick=async()=>{const reason=prompt('Motivo para borrar este presupuesto:');if(!reason?.trim()||!confirm('¿Retirar este presupuesto? Se cerrará cualquier pago pendiente y se liberará su hora. Se conservará el historial.'))return;remove.disabled=true;try{const result=await call('/api/repro-quotes?action=admin-action',{method:'POST',body:JSON.stringify({id:q.id,action:'archive',reason,confirmed:true})});await refresh();$('admin-status').textContent=result.message;}catch(e){$('admin-status').textContent=e.message;remove.disabled=false;}};item.append(remove);
     }else{
       const note=document.createElement('p');note.textContent='Pago confirmado: el historial se conserva. Puedes anular la cita desde Agenda sin devolver el dinero.';item.append(note);
+    }
+    if(q.config.priceFallback&&q.status==='pending'){
+      const note=document.createElement('p');note.textContent='Solicitud sin tarifa automática. Pendiente de revisar el precio y contactar con el cliente. No hay pago ni cita confirmados.';
+      if(q.config.requestedAppointment)note.textContent+=' Preferencia de fecha (sin reservar): '+q.config.requestedAppointment.day+' · '+q.config.requestedAppointment.time;
+      item.append(note);const contact=document.createElement('a');contact.href='mailto:'+encodeURIComponent(q.customer.email)+'?subject='+encodeURIComponent('Presupuesto Factor Lambda · '+q.id);contact.textContent='Contactar por email';item.append(contact);return item;
     }
     if(!['pending','send_failed'].includes(q.status)){
       if(q.total_cents){const total=document.createElement('p');total.textContent='Total aprobado: '+money(q.total_cents)+' IVA incluido';item.append(total);}return item;

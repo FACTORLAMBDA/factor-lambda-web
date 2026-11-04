@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const {chromium}=require('C:/Users/RubénHernándezMurill/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
+(async()=>{const root=path.resolve(__dirname,'../outputs'),server=http.createServer((req,res)=>{const file=path.join(root,new URL(req.url,'http://localhost').pathname);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(file,(e,data)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data);});});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
+try{browser=await chromium.launch({channel:'msedge',headless:true});for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000}});let posts=0;const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('https://fonts.googleapis.com/**',r=>r.abort());await page.route('https://fonts.gstatic.com/**',r=>r.abort());await page.route('**/fl-agent.js',r=>r.fulfill({body:''}));
+ await page.route('https://challenges.cloudflare.com/**',r=>r.fulfill({contentType:'text/javascript',body:'window.turnstile={render:(s,o)=>{o.callback("mock");return 0;},reset:()=>{}};window.flDirectVerification();'}));
+ await page.route('**/api/repro-quotes?**',async r=>{const action=new URL(r.request().url()).searchParams.get('action');let json;
+  if(action==='config')json={enabled:true,checkout:false,siteKey:'mock'};
+  else if(action==='direct-slots')json={slots:[{start:'08:00',end:'10:30',available:true}]};
+  else if(action==='direct-price'){await r.fulfill({status:422,json:{error:'Tarifa no disponible para esta versión.'}});return;}
+  else if(action==='fallback-lead'){posts++;const body=r.request().postDataJSON();assert.ok(body.fallbackConsent);assert.equal(body.name,'Cliente prueba');assert.equal(body.generationId,'leon-5f');assert.ok(body.requestKey);json={reference:'mock-reference',saved:true,receipt:true,notified:true};}
+  else throw Error('Unexpected API '+action);
+  await r.fulfill({json});
+ });
+ await page.goto('http://127.0.0.1:'+server.address().port+'/haz-tu-repro.html');await page.waitForFunction(()=>window.FLReproWizard);await page.evaluate(()=>window.FLReproWizard.open('SEAT Leon 1.2 TSI',{make:'seat',generationId:'leon-5f',engineIndex:2,stage:'Stage 1'}));await page.selectOption('#lead-brand','TLR SPORT');
+ await page.screenshot({path:path.resolve('work/fallback-before-'+width+'.png')});
+ await page.locator('#repro-week-next').click();await page.locator('#repro-week button:not([disabled])').first().click();await page.locator('#repro-times input').first().check();await page.locator('#repro-agenda-form button[type=submit]').click();
+ for(const [id,value]of Object.entries({name:'Cliente prueba',phone:'600000000',email:'test@example.com'}))await page.locator('#lead-'+id).fill(value);await page.locator('#lead-email-consent').check();await page.locator('#lead-send').click();await page.locator('#repro-fallback-send').waitFor();assert.ok(await page.locator('#repro-direct-pay').isHidden());assert.ok(await page.locator('#repro-fallback-send').isDisabled());await page.locator('#repro-fallback-consent').check();await page.locator('#repro-fallback-send').click();await page.waitForFunction(()=>document.getElementById('repro-payment-status').textContent.includes('Solicitud guardada'));assert.equal(posts,1);assert.ok(await page.locator('#repro-fallback-send').isDisabled());assert.match(await page.locator('#repro-payment-status').innerText(),/No se ha cobrado ni reservado/);await page.screenshot({path:path.resolve('work/repro-fallback-'+width+'.png'),fullPage:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);await page.close();}
+ console.log('PASS fallback desktop/mobile: unavailable price exposes request, explicit consent, contact reused, submit once, no payment or confirmed booking. Providers mocked.');
+}finally{await browser?.close();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -13,6 +13,7 @@ module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const 
  if(req.method==='GET')return res.status(200).json(service.quoteView(await service.publicQuote(url.searchParams.get('id'),url.searchParams.get('token'))));
  if(req.method!=='POST')return res.status(405).json({error:'Método no permitido.'});
  const data=await body(req);const action=url.searchParams.get('action');
+ if(action==='fallback-lead')return res.status(201).json(await service.fallbackLead(data));
  if(action==='consult-booking')return res.status(201).json(await service.consultBooking(data));
  if(action==='admin-action')return res.status(200).json(await service.adminAction(req,data));
  if(action==='direct-booking')return res.status(201).json(await service.directBooking(data));
