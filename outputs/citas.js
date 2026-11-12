@@ -16,7 +16,7 @@
     a.textContent='PEDIR CITA';a.href='/citas.html';a.removeAttribute('target');a.setAttribute('aria-label','Pedir cita');
   });
   document.querySelectorAll('.topbar .phone').forEach(e=>e.remove());
-  if(!document.querySelector('script[data-fl-mobile-nav]')){const menu=document.createElement('script');menu.src='/mobile-nav.js';menu.dataset.flMobileNav='true';document.head.append(menu);}
+  if(!document.querySelector('script[data-fl-mobile-nav]')){const menu=document.createElement('script');menu.src='/mobile-nav.js?v=single-column-3';menu.dataset.flMobileNav='true';document.head.append(menu);}
   const root=document.getElementById('appointment-page');if(!root)return;
   const isRepro=root.dataset.flow==='repro';
   if(!isRepro){const script=document.createElement('script');script.src='/consultas.js?v=1';document.head.append(script);return;}
