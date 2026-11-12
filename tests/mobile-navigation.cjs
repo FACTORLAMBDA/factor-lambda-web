@@ -1,0 +1,28 @@
+const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const {chromium}=require('C:/Users/RubénHernándezMurill/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
+let browserServer;
+(async()=>{const root=path.resolve(__dirname,'../outputs'),server=http.createServer((req,res)=>{const pathname=new URL(req.url,'http://localhost').pathname,file=path.join(root,pathname==='/'?'index.html':pathname);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(file,(e,data)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':file.endsWith('.png')?'image/png':file.endsWith('.jpeg')||file.endsWith('.jpg')?'image/jpeg':'text/html');res.end(data);});});await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;let browser;
+try{browserServer=await chromium.launchServer({channel:'msedge',headless:true,args:['--disable-gpu']});browser=await chromium.connect(browserServer.wsEndpoint());
+ for(const [width,url]of [[320,'/'],[390,'/'],[768,'/'],[390,'/equipo.html'],[390,'/citas.html'],[1440,'/']]){
+  console.log('Checking',width,url);const page=await browser.newPage({viewport:{width,height:900}});page.setDefaultTimeout(12000);await page.route('https://fonts.googleapis.com/**',r=>r.abort());await page.route('https://fonts.gstatic.com/**',r=>r.abort());await page.route('**/fl-agent.js',r=>r.fulfill({body:''}));await page.route('**/api/**',r=>r.fulfill({json:{enabled:false,checkout:false}}));
+  await page.route('**/fl-cursor.js',r=>r.fulfill({body:''}));await page.goto(base+url,{waitUntil:'domcontentloaded'});const toggle=page.locator('.fl-mobile-menu-toggle');await toggle.waitFor({state:'attached'});console.log('Loaded header',width,url);
+  if(width===1440){assert.ok(await toggle.isHidden());assert.ok(await page.locator('header nav').isVisible());}
+  else{
+   await toggle.waitFor({state:'visible'});const nav=page.locator('#fl-mobile-navigation');assert.ok(await nav.isHidden());assert.equal(await page.locator('header .booking-header-button').getAttribute('href'),'/citas.html');assert.ok(await page.locator('header .booking-header-button').isVisible());
+   const t=await toggle.boundingBox(),cta=await page.locator('header .booking-header-button').boundingBox();assert.ok(t.x>=cta.x+cta.width-1);assert.ok(t.x+t.width<=width);
+   await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.ok(await nav.isVisible());assert.equal(await nav.getByRole('link').count(),6);assert.ok(await nav.getByRole('link',{name:'Proyectos',exact:true}).isVisible());
+   if(width===390&&url==='/')await page.screenshot({path:path.resolve('work/mobile-menu-390.png')});
+   await page.keyboard.press('Escape');assert.ok(await nav.isHidden());assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('fl-mobile-menu-toggle')),true);
+   await toggle.click();await page.locator('main').first().click({position:{x:4,y:80},force:true});assert.ok(await nav.isHidden());
+   await toggle.click();await nav.getByRole('link',{name:'Proyectos',exact:true}).click();await page.waitForURL('**/proyectos.html');assert.ok(await page.locator('#fl-mobile-navigation').isHidden());
+  }
+  const overflow=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,id:el.id,cls:typeof el.className==='string'?el.className:'',right:el.getBoundingClientRect().right,left:el.getBoundingClientRect().left})).filter(el=>el.right>innerWidth+1||el.left< -1).slice(0,12));
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow '+width+' '+url+' '+JSON.stringify(overflow));await page.close();
+ }
+ for(const width of [390,1440]){
+  const page=await browser.newPage({viewport:{width,height:900}});let posts=0;await page.route('https://fonts.googleapis.com/**',r=>r.abort());await page.route('https://fonts.gstatic.com/**',r=>r.abort());await page.route('**/fl-agent.js',r=>r.fulfill({body:''}));await page.route('**/api/**',r=>{if(r.request().method()==='POST')posts++;return r.fulfill({json:{enabled:false,checkout:false}});});
+  await page.goto(base+'/citas.html');await page.locator('#consult-mode').waitFor();await page.selectOption('#consult-mode','repro');assert.ok(await page.locator('#consult-topic').isDisabled());assert.ok(await page.locator('#consult-topic-wrap').isHidden());assert.match(await page.locator('#consult-price').innerText(),/TLR SPORT \/ REVO/);await page.selectOption('#consult-mode','phone');assert.ok(await page.locator('#consult-topic').isEnabled());await page.selectOption('#consult-topic','mechanics');assert.match(await page.locator('#consult-price').innerText(),/25/);await page.selectOption('#consult-mode','repro');await page.locator('#consult-forward').click();await page.waitForURL('**/haz-tu-repro.html');await page.locator('#repro-make option').nth(85).waitFor({state:'attached'});assert.equal(posts,0);await page.close();
+ }
+ console.log('PASS mobile menu: right alignment, orange booking CTA, all public headers, Escape/outside/link close, desktop unchanged, 320/390/768 no overflow. Repro appointment routes to existing full catalogue without payment calls.');
+}catch(e){console.error('Navigation test failure:',e);throw e;}finally{server.closeAllConnections();await browserServer?.kill();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;});

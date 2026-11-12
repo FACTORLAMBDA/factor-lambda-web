@@ -1,0 +1,18 @@
+.fl-mobile-menu-toggle,.fl-mobile-only,.fl-mobile-generated-nav{display:none!important}
+@media(max-width:980px){
+  header.fl-site-header,header.fl-site-header.is-scrolled{position:sticky!important;top:0!important;z-index:50!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto 44px!important;align-items:center!important;gap:8px!important;width:100%!important;max-width:none!important;margin:0!important;padding:12px 16px!important;border-radius:0!important;background:rgba(5,5,5,.97)!important;box-sizing:border-box!important}
+  header.fl-site-header .brand{min-width:0!important;max-width:100%!important}
+  header.fl-site-header .brand img,header.fl-site-header.is-scrolled .brand img{width:100%!important;max-width:160px!important;height:40px!important;object-fit:contain;object-position:left center}
+  header.fl-site-header>a:first-child{min-width:0;max-width:100%;font-size:20px;line-height:1.05;text-decoration:none;color:#fff;overflow-wrap:normal}
+  header.fl-site-header .booking-header-button,header.fl-site-header .booking-header-button.fl-mobile-only{display:inline-flex!important;align-items:center;justify-content:center;grid-column:2!important;grid-row:1!important;width:104px!important;min-width:104px!important;height:42px!important;min-height:42px!important;margin:0!important;padding:2px 8px 0!important;box-sizing:border-box;border:0;border-radius:4px;background:linear-gradient(90deg,#f12824,#ffae16)!important;color:#fff!important;text-decoration:none;font-family:'Teko','Arial Narrow',Arial,sans-serif!important;font-size:20px!important;font-weight:700;line-height:1!important;letter-spacing:0;white-space:nowrap;box-shadow:none}
+  header.fl-site-header .fl-mobile-menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;grid-column:3;grid-row:1;width:44px;height:44px;padding:0;border:1px solid #555;border-radius:4px;background:#141414;color:#fff;font-family:Arial,sans-serif;font-size:27px;line-height:1;cursor:pointer}
+  header.fl-site-header .fl-mobile-menu-toggle:focus-visible,header.fl-site-header .fl-mobile-menu-toggle:hover{outline:2px solid #ff8b24;outline-offset:2px}
+  header.fl-site-header .fl-mobile-legacy-link{display:none!important}
+  header.fl-site-header nav.fl-mobile-nav{display:none!important;position:absolute;top:calc(100% + 6px);right:12px;left:auto;width:min(320px,calc(100vw - 24px));max-height:calc(100dvh - 100px);overflow:auto;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;padding:8px 12px;margin:0;border:1px solid #383838;border-radius:4px;background:#111;box-shadow:0 12px 24px #0008;font-family:'Teko','Arial Narrow',Arial,sans-serif;font-size:23px;line-height:1.15;text-transform:uppercase;box-sizing:border-box}
+  header.fl-site-header.fl-menu-open nav.fl-mobile-nav{display:flex!important}
+  header.fl-site-header nav.fl-mobile-nav a{display:block!important;flex:none;width:100%;padding:12px 8px!important;margin:0;color:#eee;text-decoration:none;border-bottom:1px solid #303030;font-size:23px!important;box-sizing:border-box}
+  header.fl-site-header nav.fl-mobile-nav a:last-child{border-bottom:0}
+  header.fl-site-header nav.fl-mobile-nav a:hover,header.fl-site-header nav.fl-mobile-nav a:focus-visible,header.fl-site-header nav.fl-mobile-nav a.is-active{color:#ff9b3b!important;background:#202020}
+  header.fl-site-header nav.fl-mobile-nav a::after{display:none!important}
+}
+@media(max-width:680px){.portfolio-hero h1{font-size:40px;overflow-wrap:anywhere}.instagram-strip{flex-wrap:wrap}}
