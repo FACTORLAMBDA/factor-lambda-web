@@ -11,10 +11,10 @@ try{browserServer=await chromium.launchServer({channel:'msedge',headless:true,ar
   else{
    await toggle.waitFor({state:'visible'});const nav=page.locator('#fl-mobile-navigation');assert.ok(await nav.isHidden());assert.equal(await page.locator('header .booking-header-button').getAttribute('href'),'/citas.html');assert.ok(await page.locator('header .booking-header-button').isVisible());
    const t=await toggle.boundingBox(),cta=await page.locator('header .booking-header-button').boundingBox();assert.ok(t.x>=cta.x+cta.width-1);assert.ok(t.x+t.width<=width);
-   await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.ok(await nav.isVisible());assert.equal(await nav.getByRole('link').count(),6);assert.ok(await nav.getByRole('link',{name:'Proyectos',exact:true}).isVisible());
+   await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.ok(await nav.isVisible());assert.equal(await nav.locator('.fl-mobile-links a').count(),6);assert.ok(await nav.getByRole('link',{name:'Proyectos',exact:true}).isVisible());const bounds=await nav.boundingBox();assert.equal(bounds.x,0);assert.equal(bounds.y,0);assert.equal(bounds.width,width);assert.equal(bounds.height,900);assert.ok(await nav.getByRole('link',{name:'+34 644 31 36 64',exact:true}).isVisible());assert.equal(await page.locator('html').getAttribute('class'),'fl-menu-lock');
    if(width===390&&url==='/')await page.screenshot({path:path.resolve('work/mobile-menu-390.png')});
    await page.keyboard.press('Escape');assert.ok(await nav.isHidden());assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('fl-mobile-menu-toggle')),true);
-   await toggle.click();await page.locator('main').first().click({position:{x:4,y:80},force:true});assert.ok(await nav.isHidden());
+   await toggle.click();await nav.getByRole('button',{name:'Cerrar menú',exact:true}).click();assert.ok(await nav.isHidden());
    await toggle.click();await nav.getByRole('link',{name:'Proyectos',exact:true}).click();await page.waitForURL('**/proyectos.html');assert.ok(await page.locator('#fl-mobile-navigation').isHidden());
   }
   const overflow=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,id:el.id,cls:typeof el.className==='string'?el.className:'',right:el.getBoundingClientRect().right,left:el.getBoundingClientRect().left})).filter(el=>el.right>innerWidth+1||el.left< -1).slice(0,12));
