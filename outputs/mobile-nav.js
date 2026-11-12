@@ -1,6 +1,6 @@
 (() => {
   const header=document.querySelector('body > header');if(!header||header.classList.contains('fl-site-header'))return;
-  const style=document.createElement('link');style.rel='stylesheet';style.href='/mobile-nav.css';document.head.append(style);
+  const style=document.createElement('link');style.rel='stylesheet';style.href='/mobile-nav.css?v=contact-centered-2';document.head.append(style);
   header.classList.add('fl-site-header');
   let nav=header.querySelector('nav');
   if(!nav){
