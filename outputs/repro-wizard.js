@@ -4,7 +4,7 @@
   let paying=false;
   let fallbackVisible=false;
   const fallbackBox=document.createElement('div');fallbackBox.id='repro-price-fallback';fallbackBox.hidden=true;
-  fallbackBox.innerHTML='<p>No tenemos un precio automático para esta selección. Podemos continuar por WhatsApp con los datos que has rellenado. La fecha elegida es una preferencia: no se ha reservado ni realizado ningún cobro.</p><label class="booking-consent"><input type="checkbox" id="repro-fallback-consent"><span>Quiero compartir mis datos y mi consulta con Factor Lambda a través de WhatsApp.</span></label>';
+  fallbackBox.innerHTML='<h2>El simulador no ha podido calcular tu precio</h2><p class="repro-professional-help">Un profesional de Factor Lambda te atenderá personalmente para revisar tu vehículo y ofrecerte un presupuesto a medida.</p><p>Continúa por WhatsApp con los datos que has rellenado. La fecha elegida queda pendiente de confirmación; todavía no se ha realizado ninguna reserva ni cobro.</p><label class="booking-consent"><input type="checkbox" id="repro-fallback-consent"><span>Quiero compartir mis datos y mi consulta con Factor Lambda a través de WhatsApp.</span></label>';
   $('repro-payment-status').after(fallbackBox);
   const fallbackButton=document.createElement('button');fallbackButton.type='button';fallbackButton.id='repro-fallback-send';fallbackButton.textContent='CONTINUAR POR WHATSAPP';fallbackButton.hidden=true;
   $('repro-direct-pay').before(fallbackButton);
@@ -49,7 +49,7 @@
   $('repro-fallback-consent').onchange=canPay;
   fallbackButton.onclick=()=>{
     if(!fallbackVisible||!$('repro-fallback-consent').checked)return;
-    const message=['Hola, quiero consultar el precio de una reprogramación.','Vehículo: '+carLabel,'Preparación: '+(vehicle.stage||'Stage 1'),'Preparador: '+brand(),'Banco de potencia: '+(dyno()?'Sí':'No'),'Duración: '+(dyno()?'2 h 30 min':'1 h 30 min'),'Preferencia de cita (sin reservar): '+fmt(day)+' · '+time,'Nombre: '+$('lead-name').value.trim(),'Teléfono: '+$('lead-phone').value.trim(),'Email: '+$('lead-email').value.trim(),'Consulta: '+$('lead-notes').value.trim(),'La web no ha podido darme precio. No he pagado ni tengo una cita confirmada.'].join('\n');
+    const message=['Hola, equipo de Factor Lambda. Me gustaría recibir asesoramiento y un presupuesto personalizado para la reprogramación de mi vehículo.','Vehículo: '+carLabel,'Preparación: '+(vehicle.stage||'Stage 1'),'Preparador: '+brand(),'Banco de potencia: '+(dyno()?'Sí':'No'),'Duración: '+(dyno()?'2 h 30 min':'1 h 30 min'),'Preferencia de cita (sin reservar): '+fmt(day)+' · '+time,'Nombre: '+$('lead-name').value.trim(),'Teléfono: '+$('lead-phone').value.trim(),'Email: '+$('lead-email').value.trim(),'Consulta: '+$('lead-notes').value.trim(),'He completado el simulador y solicito la valoración de un profesional para confirmar la disponibilidad y el importe del servicio. Quedo a la espera de vuestra atención. Muchas gracias.'].join('\n');
     window.open('https://wa.me/34644313664?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
   };
   $('repro-direct-accept').onchange=canPay;
