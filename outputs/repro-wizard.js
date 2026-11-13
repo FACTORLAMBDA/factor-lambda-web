@@ -2,14 +2,14 @@
   const $=id=>document.getElementById(id);if(!$('repro-agenda'))return;
   let carLabel='',vehicle={},day=null,time=null,weekOffset=0,slotRevision=0,pricing=null,booking=null,checkout=null,challenge=null,widget=null,settings={},pollTimer;
   let paying=false;
-  let fallbackVisible=false,fallbackSent=false,fallbackBusy=false,fallbackFailure='',fallbackKey=crypto.randomUUID();
+  let fallbackVisible=false;
   const fallbackBox=document.createElement('div');fallbackBox.id='repro-price-fallback';fallbackBox.hidden=true;
-  fallbackBox.innerHTML='<p>Podemos revisar la tarifa de tu coche personalmente. Enviar esta solicitud no realiza ningún cobro ni confirma una cita.</p><label class="booking-consent"><input type="checkbox" id="repro-fallback-consent"><span>Acepto que Factor Lambda utilice mis datos para preparar el presupuesto y contactar conmigo sobre esta solicitud.</span></label>';
+  fallbackBox.innerHTML='<p>No tenemos un precio automático para esta selección. Podemos continuar por WhatsApp con los datos que has rellenado. La fecha elegida es una preferencia: no se ha reservado ni realizado ningún cobro.</p><label class="booking-consent"><input type="checkbox" id="repro-fallback-consent"><span>Quiero compartir mis datos y mi consulta con Factor Lambda a través de WhatsApp.</span></label>';
   $('repro-payment-status').after(fallbackBox);
-  const fallbackButton=document.createElement('button');fallbackButton.type='button';fallbackButton.id='repro-fallback-send';fallbackButton.textContent='SOLICITAR PRESUPUESTO';fallbackButton.hidden=true;
+  const fallbackButton=document.createElement('button');fallbackButton.type='button';fallbackButton.id='repro-fallback-send';fallbackButton.textContent='CONTINUAR POR WHATSAPP';fallbackButton.hidden=true;
   $('repro-direct-pay').before(fallbackButton);
-  function resetFallback(){fallbackVisible=false;fallbackSent=false;fallbackFailure='';fallbackKey=crypto.randomUUID();fallbackBox.hidden=true;fallbackButton.hidden=true;fallbackButton.textContent='SOLICITAR PRESUPUESTO';$('repro-fallback-consent').checked=false;$('repro-direct-accept').checked=false;$('repro-direct-accept').closest('label').hidden=false;$('repro-direct-pay').hidden=false;}
-  function offerFallback(message){fallbackVisible=true;fallbackFailure=message;fallbackBox.hidden=false;fallbackButton.hidden=false;$('repro-direct-accept').closest('label').hidden=true;$('repro-direct-pay').hidden=true;summary();canPay();}
+  function resetFallback(){fallbackVisible=false;fallbackBox.hidden=true;fallbackButton.hidden=true;$('repro-direct-verification').hidden=false;$('repro-fallback-consent').checked=false;$('repro-direct-accept').checked=false;$('repro-direct-accept').closest('label').hidden=false;$('repro-direct-pay').hidden=false;}
+  function offerFallback(){fallbackVisible=true;fallbackBox.hidden=false;fallbackButton.hidden=false;$('repro-direct-verification').hidden=true;$('repro-direct-accept').closest('label').hidden=true;$('repro-direct-pay').hidden=true;summary();canPay();}
   const storageKey='fl-repro-payment:'+location.pathname;
   function remember(){try{if(booking)sessionStorage.setItem(storageKey,JSON.stringify(booking));else sessionStorage.removeItem(storageKey);}catch{}}
   const money=cents=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(cents/100);
@@ -23,7 +23,7 @@
   const bank=()=>dyno()?({'REVO':8000,'TLR SPORT':10000}[brand()]??null):0;
   async function api(action,data,post=false){const response=await fetch('/api/repro-quotes?'+(post?'action='+action:new URLSearchParams({action,...data})),{...(post?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{}),...(action==='direct-price'?{signal:AbortSignal.timeout(20000)}:{}),cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error||'No se pudo completar la operación.');return result;}
   function go(step){for(const [key,id]of Object.entries({vehicle:'repro-selector',agenda:'repro-agenda',contact:'repro-contact',payment:'repro-payment'}))$(id).hidden=key!==step;document.querySelectorAll('[data-repro-step]').forEach(node=>{if(node.dataset.reproStep===step)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');});const target=step==='vehicle'?$('repro-selector'):$('repro-'+step+'-title');target.scrollIntoView({behavior:'smooth',block:'start'});if(target.matches('[tabindex]'))target.focus({preventScroll:true});}
-  function canPay(){$('repro-direct-pay').disabled=paying||!pricing||(!booking&&!challenge)||!$('repro-direct-accept').checked||!!checkout||settings.checkout!==true;$('payment-back').disabled=paying||fallbackBusy;fallbackButton.disabled=fallbackBusy||fallbackSent||!fallbackVisible||!challenge||!$('repro-fallback-consent').checked||!settings.enabled;}
+  function canPay(){$('repro-direct-pay').disabled=paying||!pricing||(!booking&&!challenge)||!$('repro-direct-accept').checked||!!checkout||settings.checkout!==true;$('payment-back').disabled=paying;fallbackButton.disabled=!fallbackVisible||!$('repro-fallback-consent').checked;}
   async function renderTimes(){
     const revision=++slotRevision;$('repro-times').replaceChildren();$('repro-day-label').textContent=day?fmt(day):'Selecciona un día';if(!day)return;
     $('repro-agenda-status').textContent='Consultando disponibilidad…';
@@ -43,15 +43,14 @@
   $('repro-lead-form').onsubmit=async event=>{
     event.preventDefault();resetFallback();pricing=null;summary();go('payment');$('repro-payment-status').textContent='Calculando tarifa oficial…';canPay();
     try{pricing=await api('direct-price',{generationId:vehicle.generationId||'',engineIndex:String(vehicle.engineIndex??''),stage:vehicle.stage||'Stage 1',brand:brand(),dyno:String(dyno())});summary();$('repro-payment-status').textContent='El total se comprobará de nuevo al abrir Stripe. La hora quedará bloqueada durante el pago.';}
-    catch(error){const message=['TimeoutError','AbortError'].includes(error.name)?'La consulta de la tarifa está tardando demasiado. Puedes solicitar un presupuesto personalizado.':error.message;$('repro-payment-status').textContent=message;offerFallback(message);}
+    catch(error){const message=['TimeoutError','AbortError'].includes(error.name)?'No hemos podido obtener el precio. Puedes continuar por WhatsApp.':error.message;$('repro-payment-status').textContent=message;offerFallback();}
     canPay();
   };
   $('repro-fallback-consent').onchange=canPay;
-  fallbackButton.onclick=async()=>{
-    if(fallbackBusy||fallbackSent||!challenge||!$('repro-fallback-consent').checked)return;fallbackBusy=true;canPay();
-    try{const result=await api('fallback-lead',{...vehicle,name:$('lead-name').value.trim(),email:$('lead-email').value.trim(),phone:$('lead-phone').value.trim(),notes:$('lead-notes').value.trim(),brand:brand(),dyno:dyno(),day,time,fallbackConsent:true,requestKey:fallbackKey,priceFailure:fallbackFailure,challenge},true);fallbackSent=true;fallbackButton.textContent='SOLICITUD ENVIADA';$('repro-payment-status').textContent='Solicitud guardada. Referencia: '+result.reference+'. Revisaremos tu coche para preparar el presupuesto. No se ha cobrado ni reservado ninguna cita.'+(result.receipt?' Te hemos enviado un correo de recepción.':'');}
-    catch(error){$('repro-payment-status').textContent=error.message;}
-    finally{fallbackBusy=false;challenge=null;if(window.turnstile&&widget!==null)window.turnstile.reset(widget);canPay();}
+  fallbackButton.onclick=()=>{
+    if(!fallbackVisible||!$('repro-fallback-consent').checked)return;
+    const message=['Hola, quiero consultar el precio de una reprogramación.','Vehículo: '+carLabel,'Preparación: '+(vehicle.stage||'Stage 1'),'Preparador: '+brand(),'Banco de potencia: '+(dyno()?'Sí':'No'),'Duración: '+(dyno()?'2 h 30 min':'1 h 30 min'),'Preferencia de cita (sin reservar): '+fmt(day)+' · '+time,'Nombre: '+$('lead-name').value.trim(),'Teléfono: '+$('lead-phone').value.trim(),'Email: '+$('lead-email').value.trim(),'Consulta: '+$('lead-notes').value.trim(),'La web no ha podido darme precio. No he pagado ni tengo una cita confirmada.'].join('\n');
+    window.open('https://wa.me/34644313664?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
   };
   $('repro-direct-accept').onchange=canPay;
   async function script(src){await new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=src;node.onload=resolve;node.onerror=()=>{node.remove();reject(Error('No se pudo cargar el servicio de pago. Revisa la conexión.'));};document.head.append(node);});}
