@@ -1,0 +1,32 @@
+{
+  "verifiedAt":"2026-11-13",
+  "currency":"eur",
+  "country":"ES",
+  "includesVat":false,
+  "stage":"Stage 1",
+  "brand":"REVO",
+  "entries":[
+    ["golf8",11,150,"2.0 TDI",39900,"volkswagen/golf-viii/363/stage-1"],
+    ["golf8",17,320,"R 2.0 TSI",64900,"volkswagen/golf-viii/412/stage-1"],
+    ["golf8",18,333,"R 20 Years 2.0 TSI",64900,"volkswagen/golf-viii/461/stage-1"],
+    ["leon-5f",2,110,"1.2 TSI",39900,"seat/leon-mk3-5f-2012-2020/233/stage-1"],
+    ["leon-5f",4,125,"1.4 TSI",39900,"seat/leon-mk3-5f-2012-2020/241/stage-1"],
+    ["leon-5f",6,150,"1.4 TSI ACT",39900,"seat/leon-mk3-5f-2012-2020/234/stage-1"],
+    ["leon-5f",9,280,"Cupra 2.0 TSI",56000,"seat/leon-mk3-5f-2012-2020/194/stage-1"],
+    ["leon-5f",10,290,"2.0 TSI Cupra",56000,"seat/leon-mk3-5f-2012-2020/282/stage-1"],
+    ["leon-5f",14,150,"2.0 TDI",39900,"seat/leon-mk3-5f-2012-2020/199/stage-1"],
+    ["leon-5f",15,184,"2.0 TDI",39900,"seat/leon-mk3-5f-2012-2020/200/stage-1"],
+    ["leon-5f-fl",1,110,"1.2 TSI",39900,"seat/leon-mk3-5f-2012-2020/233/stage-1"],
+    ["leon-5f-fl",4,125,"1.4 TSI",39900,"seat/leon-mk3-5f-2012-2020/241/stage-1"],
+    ["leon-5f-fl",5,150,"1.4 TSI ACT",39900,"seat/leon-mk3-5f-2012-2020/234/stage-1"],
+    ["leon-5f-fl",8,180,"1.8 TSI",49900,"seat/leon-mk3-5f-2012-2020/197/stage-1"],
+    ["leon-5f-fl",9,190,"2.0 TSI",54900,"seat/leon-mk3-5f-2012-2020/421/stage-1"],
+    ["leon-5f-fl",10,290,"Cupra 2.0 TSI (GPF)",59900,"seat/leon-mk3-5f-2012-2020/387/stage-1"],
+    ["leon-5f-fl",11,300,"Cupra 2.0 TSI",56000,"seat/leon-mk3-5f-2012-2020/181/stage-1"],
+    ["leon-5f-fl",17,150,"2.0 TDI",39900,"seat/leon-mk3-5f-2012-2020/199/stage-1"],
+    ["leon-5f-fl",18,184,"2.0 TDI",39900,"seat/leon-mk3-5f-2012-2020/200/stage-1"],
+    ["catalog-e85c5c6a5f210194",0,367,"RS3 2.5 TFSI",59900,"audi/rs3/272/stage-1"],
+    ["catalog-fe6d5a1c0db7eeea",0,400,"RS3 2.5 TFSI (2017 - 2018)",69900,"audi/rs3/353/stage-1"],
+    ["catalog-fe6d5a1c0db7eeea",1,400,"RS3 2.5 TFSI (GPF) (2019 - 2021)",69900,"audi/rs3/398/stage-1"]
+  ]
+}

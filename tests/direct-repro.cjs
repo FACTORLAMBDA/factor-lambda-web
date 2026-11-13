@@ -41,7 +41,7 @@ global.fetch=async(url,options={})=>{
  // Find the engine by its immutable catalogue entry rather than assuming an index.
  const generation=require('../outputs/vehicle-generations.json').generations.find(g=>g.id==='leon-5f');selected.engineIndex=generation.engines.findIndex(e=>e[1].startsWith('1.2 TSI')&&e[2]===110);
  const calculated=await tariffs.price(selected);assert.equal(calculated.totalCents,58400);
- await assert.rejects(()=>tariffs.price({...selected,brand:'REVO'}),/REVO/);
+ const revo=await tariffs.price({...selected,brand:'REVO'});assert.equal(revo.totalCents,56279);
  await assert.rejects(()=>tariffs.price({...selected,brand:'Sin preferencia'}),/elige/);
  assert.equal(tariffs.engineName('1200 TSI','Leon'),tariffs.engineName('1.2 TSI (2014 - 2016)','Leon'));
  const winter=reservations.appointment('2027-01-11','08:00',true,new Date('2027-01-01'));assert.equal(winter.start,'2027-01-11T07:00:00.000Z');

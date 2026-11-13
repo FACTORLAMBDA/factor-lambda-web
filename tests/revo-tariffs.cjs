@@ -11,6 +11,16 @@ const {price}=require('../lib/repro-tariffs');
  }
  const troc=await price({generationId:'catalog-71b6949d59aceb75',engineIndex:6,stage:'Stage 1',brand:'REVO',dyno:true});
  assert.equal(troc.totalCents,80479);
+ const batch=require('../data/revo-verified-2026-11-13.json');
+ for(const [generationId,engineIndex,stockPower,engineLabel,netCents]of batch.entries){
+  const result=await price({generationId,engineIndex,brand:'REVO',stage:'Stage 1',dyno:true});
+  assert.equal(result.totalCents,netCents+Math.round(netCents*.21)+8000,engineLabel+' '+stockPower);
+ }
+ const oldCupra=await price({generationId:'leon-5f-fl',engineIndex:11,brand:'REVO',stage:'Stage 1',dyno:true});
+ assert.equal(oldCupra.totalCents,75760);
+ const gpfCupra=await price({generationId:'leon-5f-fl',engineIndex:10,brand:'REVO',stage:'Stage 1',dyno:true});
+ assert.equal(gpfCupra.totalCents,80479);
+ await assert.rejects(()=>price({generationId:'catalog-2ccbc5766b717923',engineIndex:0,brand:'REVO',stage:'Stage 1',dyno:true}),/No hay una tarifa REVO/);
  await assert.rejects(()=>price({generationId:'golf8',engineIndex:14,stage:'Stage 1',brand:'REVO',dyno:true}),/No hay una tarifa REVO/);
  await assert.rejects(()=>price({generationId:'golf8',engineIndex:16,stage:'Stage 2',brand:'REVO',dyno:true}),/No hay una tarifa REVO/);
  const original=rows[0].stockPower;rows[0].stockPower=190;
