@@ -204,35 +204,28 @@
       bottom: 0;
       border-radius: 0;
       aspect-ratio: auto;
-      background: none;
+      background: #c4c4c4;
       clip-path: none;
       opacity: 1;
     }
     .member-photo.real-photo::before { content: none; }
     .member-photo.real-photo img {
+      position: absolute;
+      top: var(--portrait-top, 0%);
+      left: 0;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 36%;
-      filter: saturate(.95) contrast(1.05);
-    }
-    .member-photo.david-photo img {
-      object-position: center 18%;
-    }
-    .member-photo.ana-photo img {
-      object-position: center 66%;
-    }
-    .member-photo.crew-portrait { background: #d0d0da; }
-    .member-photo.crew-portrait img { object-fit: cover; object-position: center top; }
-    .member-photo.david-portrait img { object-fit: cover; object-position: center top; }
-    .member-photo.new-portrait img { object-fit: cover; object-position: center top; }
-    .member-photo.marc-portrait img { object-position: center 85%; }
-    .member-photo.javi-portrait img { object-position: center 50%; }
-    .member-photo.tamara-photo img, .member-photo.ruben-photo img, .member-photo.ana-portrait img {
+      height: 102%;
       object-fit: cover;
       object-position: center top;
+      filter: none;
     }
-    .member-photo.ana-portrait img { object-position: center bottom; }
+    .member-card:nth-child(1) { --portrait-top: 1.27%; }
+    .member-card:nth-child(2) { --portrait-top: .55%; }
+    .member-card:nth-child(3), .member-card:nth-child(4) { --portrait-top: .15%; }
+    .member-card:nth-child(5) { --portrait-top: .35%; }
+    .member-card:nth-child(6) { --portrait-top: -1.08%; }
+    .member-card:nth-child(7) { --portrait-top: -.26%; }
+    .member-card:nth-child(8) { --portrait-top: -.16%; }
     .member-info {
       position: absolute;
       left: 0;
@@ -366,7 +359,7 @@
       <div class="team-grid">
         <article class="member-card">
           <div class="member-photo real-photo new-portrait joaquin-portrait">
-            <img src="/assets/joaquin-crew-logo.png" alt="Joaquin Funez">
+            <img src="/assets/joaquin-crew-uniforme.png" alt="Joaquin Funez">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Joaquin</span><strong>Funez</strong></div>
@@ -375,7 +368,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo crew-portrait">
-            <img src="/assets/german-crew-logo.png" alt="Germán Fernández">
+            <img src="/assets/german-crew-uniforme.png" alt="Germán Fernández">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Germán</span><strong>Fernández</strong></div>
@@ -384,7 +377,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo new-portrait marc-portrait">
-            <img src="/assets/marc-crew-logo.png" alt="Marc Gil">
+            <img src="/assets/marc-crew-uniforme.png" alt="Marc Gil">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Marc</span><strong>Gil</strong></div>
@@ -393,7 +386,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo crew-portrait david-portrait">
-            <img src="/assets/david-crew-logo.png" alt="David Flores">
+            <img src="/assets/david-crew-uniforme.png" alt="David Flores">
           </div>
           <div class="member-info">
             <div class="member-name"><span>David</span><strong>Flores</strong></div>
@@ -402,7 +395,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo ruben-photo">
-            <img src="/assets/ruben-crew-logo.png" alt="Rubén Hernández">
+            <img src="/assets/ruben-crew-uniforme-final.png" alt="Rubén Hernández">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Rubén</span><strong>Hernández</strong></div>
@@ -411,7 +404,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo new-portrait javi-portrait">
-            <img src="/assets/javi-crew-logo.png" alt="Javi Torralbo">
+            <img src="/assets/javi-crew-uniforme.png" alt="Javi Torralbo">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Javi</span><strong>Torralbo</strong></div>
@@ -420,7 +413,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo tamara-photo">
-            <img src="/assets/tamara-crew-logo.png" alt="Tamara Morillo">
+            <img src="/assets/tamara-crew-uniforme.png" alt="Tamara Morillo">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Tamara</span><strong>Morillo</strong></div>
@@ -429,7 +422,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo ana-portrait">
-            <img src="/assets/ana-lopez-actual.jpeg" alt="Ana López">
+            <img src="/assets/ana-crew-uniforme.png" alt="Ana López">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Ana</span><strong>López</strong></div>
