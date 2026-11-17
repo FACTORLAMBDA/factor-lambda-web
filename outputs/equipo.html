@@ -149,7 +149,8 @@
     }
     .member-card {
       position: relative;
-      min-height: 520px;
+      aspect-ratio: 426 / 520;
+      min-height: 0;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,.08);
       background:
@@ -222,16 +223,14 @@
       object-position: center 66%;
     }
     .member-photo.crew-portrait { background: #d0d0da; }
-    .member-photo.crew-portrait img { object-fit: contain; object-position: center top; }
+    .member-photo.crew-portrait img { object-fit: cover; object-position: center top; }
     .member-photo.david-portrait img { object-fit: cover; object-position: center top; }
     .member-photo.new-portrait img { object-fit: cover; object-position: center top; }
-    .member-photo.tamara-photo, .member-photo.ruben-photo, .member-photo.ana-portrait { overflow: hidden; background: #d0d0da; }
+    .member-photo.marc-portrait img { object-position: center 85%; }
+    .member-photo.javi-portrait img { object-position: center 50%; }
     .member-photo.tamara-photo img, .member-photo.ruben-photo img, .member-photo.ana-portrait img {
-      position: absolute;
-      top: -44.65%;
-      height: 190%;
-      object-position: center;
-      clip-path: inset(23.5% 0);
+      object-fit: cover;
+      object-position: center top;
     }
     .member-info {
       position: absolute;
@@ -314,7 +313,7 @@
     }
     @media (max-width: 680px) {
       .team-grid { grid-template-columns: 1fr; }
-      .member-card { min-height: 470px; }
+      .member-card { min-height: 0; }
       .whatsapp-button { font-size: 14px; }
     }
   </style>
@@ -402,7 +401,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo ruben-photo">
-            <img src="/assets/ruben-hernandez-crew.jpeg" alt="Rubén Hernández">
+            <img src="/assets/ruben-crew-fondo.png" alt="Rubén Hernández">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Rubén</span><strong>Hernández</strong></div>
@@ -420,7 +419,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo tamara-photo">
-            <img src="/assets/tamara-morillo.jpeg" alt="Tamara Morillo">
+            <img src="/assets/tamara-crew-fondo.png" alt="Tamara Morillo">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Tamara</span><strong>Morillo</strong></div>
@@ -429,7 +428,7 @@
         </article>
         <article class="member-card">
           <div class="member-photo real-photo ana-portrait">
-            <img src="/assets/ana-lopez-crew.png" alt="Ana López">
+            <img src="/assets/ana-crew-fondo.png" alt="Ana López">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Ana</span><strong>López</strong></div>
