@@ -2,6 +2,11 @@
   if(!document.querySelector('script[data-fl-agent]')){const agent=document.createElement('script');agent.src='/fl-agent.js';agent.dataset.flAgent='true';document.head.append(agent);}
   const headerStyle=document.createElement('style');
   headerStyle.textContent=`
+    html{scrollbar-color:#ff7a1a #111}
+    html::-webkit-scrollbar{width:9px}
+    html::-webkit-scrollbar-track{background:#111}
+    html::-webkit-scrollbar-thumb{background:#ff7a1a}
+    html::-webkit-scrollbar-thumb:hover{background:#ff9a3d}
     header nav{flex-wrap:wrap;row-gap:0}
     header .booking-header-button{display:inline-flex;align-items:center;justify-content:center;align-self:center;justify-self:center;width:156px;min-width:156px;height:48px;min-height:48px;padding:2px 20px 0;border-radius:5px;font-family:'Teko','Arial Narrow',Arial,sans-serif;font-size:24px;line-height:1;font-weight:700;text-align:center;white-space:nowrap;letter-spacing:0;box-sizing:border-box}
     @media(max-width:1050px){header .booking-header-button{align-self:center;margin:4px auto;width:160px;min-width:160px}}
