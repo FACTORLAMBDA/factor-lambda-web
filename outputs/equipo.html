@@ -221,12 +221,15 @@
     .member-photo.ana-photo img {
       object-position: center 66%;
     }
-    .member-photo.tamara-photo, .member-photo.ruben-photo, .member-photo.ana-portrait { overflow: hidden; }
+    .member-photo.crew-portrait { background: #d0d0da; }
+    .member-photo.crew-portrait img { object-fit: contain; object-position: center top; }
+    .member-photo.tamara-photo, .member-photo.ruben-photo, .member-photo.ana-portrait { overflow: hidden; background: #d0d0da; }
     .member-photo.tamara-photo img, .member-photo.ruben-photo img, .member-photo.ana-portrait img {
       position: absolute;
-      top: -45%;
-      height: 190%;
+      top: -35.5%;
+      height: 171%;
       object-position: center;
+      clip-path: inset(23.5% 0);
     }
     .member-info {
       position: absolute;
@@ -369,8 +372,8 @@
           </div>
         </article>
         <article class="member-card">
-          <div class="member-photo real-photo">
-            <img src="/assets/german-fernandez-sin-texto.png" alt="Germán Fernández">
+          <div class="member-photo real-photo crew-portrait">
+            <img src="/assets/german-fernandez-crew.jpeg" alt="Germán Fernández">
           </div>
           <div class="member-info">
             <div class="member-name"><span>Germán</span><strong>Fernández</strong></div>
@@ -387,8 +390,8 @@
           </div>
         </article>
         <article class="member-card">
-          <div class="member-photo real-photo david-photo">
-            <img src="/assets/david-flores.png" alt="David Flores">
+          <div class="member-photo real-photo crew-portrait david-portrait">
+            <img src="/assets/david-flores-crew.jpeg" alt="David Flores">
           </div>
           <div class="member-info">
             <div class="member-name"><span>David</span><strong>Flores</strong></div>
