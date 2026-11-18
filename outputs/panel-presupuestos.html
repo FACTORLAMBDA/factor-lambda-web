@@ -1,5 +1,12 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Panel privado · Factor Lambda</title><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="/panel-agenda.css?v=calendar1"></head><body><main>
-<header class="panel-heading"><div><h1>Factor Lambda</h1><span>Panel privado · taller@factorlambda.com</span></div><button id="admin-logout" type="button" hidden>Cerrar sesión</button></header>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Panel privado · Factor Lambda</title><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><link rel="preload" as="image" href="/assets/panel-factor-lambda-logo.png"><link rel="stylesheet" href="/panel-agenda.css?v=calendar1"><link rel="stylesheet" href="/panel-brand.css?v=brand1"><script src="/panel-boot.js?v=brand1" defer></script></head><body>
+<div id="panel-loader" class="panel-loader" hidden>
+  <div class="loader-content">
+    <div class="loader-logo" aria-hidden="true"><img id="loader-logo-base" src="/assets/panel-factor-lambda-logo.png" alt="" width="885" height="266"><img class="loader-logo-color" src="/assets/panel-factor-lambda-logo.png" alt="" width="885" height="266"></div>
+    <div id="panel-progress" class="loader-progress" role="progressbar" aria-label="Cargando panel privado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="loader-progress-track"><span id="loader-progress-fill"></span></span><span id="loader-percentage" aria-hidden="true">0%</span></div>
+  </div>
+</div>
+<main id="panel-main">
+<header class="panel-heading"><div class="panel-identity"><img class="panel-brand-logo" src="/assets/panel-factor-lambda-logo.png" alt="Factor Lambda" width="885" height="266"><div><h1>Panel privado</h1><span>taller@factorlambda.com</span></div></div><button id="admin-logout" type="button" hidden>Cerrar sesión</button></header>
 <form id="admin-login"><h2>Acceso al taller</h2><label for="admin-password">Contraseña</label><input id="admin-password" type="password" required autocomplete="current-password"><button type="submit">Entrar</button></form><p id="admin-status" role="status"></p>
 <section id="admin-workspace" hidden><nav class="panel-tabs" aria-label="Vistas del panel"><button id="tab-agenda" aria-pressed="true">Calendario</button><button id="tab-quotes" aria-pressed="false">Presupuestos</button></nav>
 <section id="admin-agenda"><div class="agenda-toolbar"><button id="agenda-new" class="primary">+ Nueva cita</button><label>Ir a fecha<input id="agenda-jump" type="date"></label><button id="agenda-refresh" title="Actualizar calendario" aria-label="Actualizar calendario">&#8635;</button></div>
