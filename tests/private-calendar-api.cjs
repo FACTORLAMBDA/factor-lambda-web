@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),service=require('../lib/quote-service');
+process.env.QUOTE_ADMIN_PASSWORD='calendar-test';process.env.SUPABASE_URL='https://example.supabase.co';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';
+const original=global.fetch,req={headers:{authorization:'Bearer calendar-test'}};
+(async()=>{let requests=0;try{global.fetch=async(url,options)=>{requests++;assert.ok(url.includes('/rpc/fl_private_calendar_'));const body=JSON.parse(options.body);if(url.endsWith('_save')){assert.equal(body.p_actor,'taller@factorlambda.com');assert.equal(body.p_appointment.time,'23:15');assert.ok(!('p_total_cents'in body));}return{ok:true,text:async()=>JSON.stringify([])};};
+ await assert.rejects(()=>service.privateCalendar({headers:{}},'list',{from:'2028-01-01',to:'2028-02-01'}),e=>e.status===401);assert.equal(requests,0);
+ await service.privateCalendar(req,'list',{from:'2028-01-01',to:'2028-02-12'});
+ await assert.rejects(()=>service.privateCalendar(req,'list',{from:'2028-01-01',to:'2029-01-01'}));
+ const data={start:'2028-12-31T23:15',end:'2029-01-01T01:00',title:'Recepción',name:'Prueba',resource:'repro',mode:'live',reason:'Cliente',confirmed:true};
+ await service.privateCalendar(req,'save',data);await assert.rejects(()=>service.privateCalendar(req,'save',{...data,confirmed:false}));await assert.rejects(()=>service.privateCalendar(req,'save',{...data,email:'<bad>'}));
+ global.fetch=async()=>({ok:false,json:async()=>({code:'23P01'})});await assert.rejects(()=>service.privateCalendar(req,'save',data),e=>e.status===409);
+ global.fetch=async()=>({ok:false,json:async()=>({code:'PGRST202'})});await assert.rejects(()=>service.privateCalendar(req,'save',data),/private-calendar.sql/);
+ console.log('PASS calendar API authentication, bounded queries, free staff times, validated input, no financial mutation and actionable migration/conflict errors.');
+}finally{global.fetch=original;}})().catch(e=>{console.error(e);process.exitCode=1;});

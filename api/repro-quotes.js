@@ -9,6 +9,7 @@ module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const 
  if(req.method==='GET'&&url.searchParams.get('action')==='direct-slots')return res.status(200).json(await service.directSlots(url.searchParams.get('day'),url.searchParams.get('dyno')==='true'));
  if(req.method==='GET'&&url.searchParams.get('action')==='list')return res.status(200).json(await service.listQuotes(req));
  if(req.method==='GET'&&url.searchParams.get('action')==='agenda')return res.status(200).json(await service.listAgenda(req,url.searchParams.get('from'),url.searchParams.get('to')));
+ if(req.method==='GET'&&url.searchParams.get('action')==='calendar')return res.status(200).json(await service.privateCalendar(req,'list',{from:url.searchParams.get('from'),to:url.searchParams.get('to')}));
  if(req.method==='GET'&&url.searchParams.get('action')==='payment-status')return res.status(200).json(await service.checkoutStatus(url.searchParams.get('id'),url.searchParams.get('token')));
  if(req.method==='GET')return res.status(200).json(service.quoteView(await service.publicQuote(url.searchParams.get('id'),url.searchParams.get('token'))));
  if(req.method!=='POST')return res.status(405).json({error:'Método no permitido.'});
@@ -16,6 +17,8 @@ module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');const 
  if(action==='fallback-lead')return res.status(201).json(await service.fallbackLead(data));
  if(action==='consult-booking')return res.status(201).json(await service.consultBooking(data));
  if(action==='admin-action')return res.status(200).json(await service.adminAction(req,data));
+ if(action==='calendar-save')return res.status(200).json(await service.privateCalendar(req,'save',data));
+ if(action==='calendar-cancel')return res.status(200).json(await service.cancelCalendar(req,data));
  if(action==='direct-booking')return res.status(201).json(await service.directBooking(data));
  if(action==='direct-cancel')return res.status(200).json(await service.cancelDirect(data.id,data.token));
  if(action==='approve')return res.status(200).json(await service.approve(req,data));
