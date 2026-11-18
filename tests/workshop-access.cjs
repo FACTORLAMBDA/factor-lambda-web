@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),service=require('../lib/quote-service');
+process.env.QUOTE_ADMIN_PASSWORD='owner-existing-test';process.env.QUOTE_WORKSHOP_PASSWORD='workshop-new-test-password';process.env.SUPABASE_URL='https://mock.supabase.co';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_mock';
+const original=global.fetch;
+(async()=>{let reads=0;try{global.fetch=async()=>{reads++;return{ok:true,status:200,json:async()=>[]};};
+ for(const password of [process.env.QUOTE_ADMIN_PASSWORD,process.env.QUOTE_WORKSHOP_PASSWORD])assert.deepEqual(await service.listQuotes({headers:{authorization:'Bearer '+password}}),[]);
+ assert.equal(reads,2);await assert.rejects(()=>service.listQuotes({headers:{authorization:'Bearer wrong'}}),e=>e.status===401);assert.equal(reads,2);
+ delete process.env.QUOTE_WORKSHOP_PASSWORD;await assert.rejects(()=>service.listQuotes({headers:{authorization:'Bearer undefined'}}),e=>e.status===401);
+ process.env.QUOTE_WORKSHOP_PASSWORD='short';await assert.rejects(()=>service.listQuotes({headers:{authorization:'Bearer short'}}),e=>e.status===401);
+ console.log('PASS owner access preserved, independent workshop password, unauthorized and unconfigured credentials denied.');
+}finally{global.fetch=original;}})().catch(e=>{console.error(e);process.exitCode=1;});

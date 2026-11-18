@@ -2,6 +2,8 @@
 
 Acceso: https://www.factorlambda.com/panel-presupuestos.html. Se conserva QUOTE_ADMIN_PASSWORD. El acceso es compartido por los tres responsables; taller@factorlambda.com identifica la cuenta del taller, no una autenticación nueva por correo ni tres usuarios independientes.
 
+Opcionalmente, QUOTE_WORKSHOP_PASSWORD permite una clave independiente para el equipo compartido (mínimo 16 caracteres), manteniendo vigente la clave del dueño. Configurar ambas como secretos de producción en Vercel; los valores nunca se guardan en el repositorio. Se requiere un despliegue posterior al cambio de variables. Ambas claves tienen los mismos permisos del panel.
+
 ## Activación
 
 En el SQL Editor de Supabase ejecutar `database/private-calendar.sql`, después de las migraciones anteriores de reservas y consultas. Es repetible y no borra citas ni pagos. No requiere nuevas variables de Vercel. Hasta instalarlo, el calendario muestra las reservas existentes en lectura y mantiene disponible Presupuestos.
