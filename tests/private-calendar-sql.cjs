@@ -5,9 +5,9 @@ const {appointment}=require('../lib/admin-calendar');
 (async()=>{const db=new PGlite({extensions:{btree_gist}});try{
  await db.exec('create schema extensions;create role anon;create role authenticated;create role service_role;');
  for(const file of ['repro-quotes','direct-repro-bookings','admin-booking-actions','consultation-bookings','private-calendar','private-calendar'])await db.exec(fs.readFileSync('database/'+file+'.sql','utf8'));
- const a=appointment('2028-01-02T02:15','2028-01-02T03:45');
+ const a={...appointment('2028-01-02T02:15','2028-01-02T03:45'),mechanic:'gerson',billedHours:2.75};
  async function save(id=null,expected=null,time=a,resource='repro'){return(await db.query('select public.fl_private_calendar_save($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as result',[id,expected,time,'Prueba interna',{name:'Cliente',email:'test@example.com',phone:'34600000000'},'SEAT Leon','Notas',resource,'test','Petición cliente','taller@factorlambda.com'])).rows[0].result;}
- const created=await save();let q=(await db.query('select * from fl_quote_requests where id=$1',[created.id])).rows[0];assert.equal(q.status,'pending');assert.equal(q.total_cents,null);assert.equal(q.config.manualAppointment,true);
+ const created=await save();let q=(await db.query('select * from fl_quote_requests where id=$1',[created.id])).rows[0];assert.equal(q.status,'pending');assert.equal(q.total_cents,null);assert.equal(q.config.manualAppointment,true);assert.equal(q.config.appointment.mechanic,'gerson');assert.equal(q.config.appointment.billedHours,2.75);
  assert.equal((await db.query("select * from fl_repro_busy('2028-01-02','test')")).rows.length,1);
  await assert.rejects(()=>save(),e=>e.code==='23P01');await save(null,null,a,'consult-german');
  let listing=(await db.query('select fl_private_calendar_list($1,$2) as rows',[a.start,a.end])).rows[0].rows;assert.equal(listing.length,2);

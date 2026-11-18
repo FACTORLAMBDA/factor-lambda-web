@@ -12,6 +12,7 @@ En el SQL Editor de Supabase ejecutar `database/private-calendar.sql`, después 
 
 - Día, semana, mes y lista. Fecha libre para navegar a cualquier año. Horario privado 00:00–24:00, incluidos fines de semana y festivos.
 - Título, fecha/hora de inicio y fin, descripción, cliente, contacto, vehículo y calendario asignado.
+- Mecánico asignado (Germán, Mazius, Gerson o David) y horas facturadas con hasta dos decimales. Son datos internos de la cita, independientes de su duración y de los importes de Stripe. Las horas en blanco significan sin registrar; cero es un valor registrado. Se conservan al arrastrar o cambiar la duración, se pueden filtrar por mecánico y se suman los registros visibles. La asignación no cambia automáticamente el recurso de reservas.
 - Crear citas internas, editar y mover citas confirmadas, arrastrar y cambiar duración, anular conservando historial. No modifica importes ni ejecuta cobros ni reembolsos.
 - Reprogramaciones, consultas de Joaquín y taller de Germán comparten los mismos recursos y exclusión de solapamientos que las reservas públicas. Una retención de pago activa también impide superponer otra cita en el mismo recurso.
 - Las citas web solo se confirman tras el webhook verificado de Stripe. Las internas se confirman por intervención del taller, sin fingir que están pagadas. Las solicitudes web sin pago se muestran separadas y no se pueden convertir en confirmadas desde el editor.

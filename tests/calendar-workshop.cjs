@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),service=require('../lib/quote-service'),calendar=require('../lib/admin-calendar');
+const original=global.fetch;process.env.QUOTE_ADMIN_PASSWORD='test-owner';process.env.SUPABASE_URL='https://mock.supabase.co';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_mock';
+(async()=>{let saved;try{global.fetch=async(url,options)=>{if(url.includes('/fl_quote_requests?'))return{ok:true,status:200,json:async()=>[{id:'11111111-1111-4111-8111-111111111111',config:{appointment:{mechanic:'david',billedHours:2.5}}}]};saved=JSON.parse(options.body);return{ok:true,text:async()=>JSON.stringify({id:'test'})};};
+ const data={title:'Prueba',reason:'Asignación',confirmed:true,start:'2028-01-02T10:00',end:'2028-01-02T11:00',resource:'consult-german',mode:'test',mechanic:'mazius',billedHours:1.75};
+ await calendar.save(data);assert.equal(saved.p_appointment.mechanic,'mazius');assert.equal(saved.p_appointment.billedHours,1.75);assert.equal(saved.p_appointment.durationMinutes,60);assert.ok(!('p_total_cents'in saved));
+ for(const bad of [-1,NaN,Infinity,10001,1.234,'2.5'])await assert.rejects(()=>calendar.save({...data,billedHours:bad}));
+ await assert.rejects(()=>calendar.save({...data,mechanic:'unknown'}));
+ await calendar.save({...data,billedHours:0});assert.equal(saved.p_appointment.billedHours,0);await calendar.save({...data,billedHours:null});assert.equal(saved.p_appointment.billedHours,null);
+ const legacy={...data,id:'11111111-1111-4111-8111-111111111111'};delete legacy.mechanic;delete legacy.billedHours;await service.privateCalendar({headers:{authorization:'Bearer test-owner'}},'save',legacy);assert.equal(saved.p_appointment.mechanic,'david');assert.equal(saved.p_appointment.billedHours,2.5);
+ console.log('PASS mechanic whitelist, decimal billed hours, blank vs zero, duration/payment independence, legacy client preservation.');
+}finally{global.fetch=original;}})().catch(e=>{console.error(e);process.exitCode=1;});
