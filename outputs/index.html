@@ -704,7 +704,7 @@
     .compare {
       --split: 50%;
       position: relative;
-      aspect-ratio: 3 / 4;
+      aspect-ratio: 1.32 / 1;
       overflow: hidden;
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, .12);
@@ -714,15 +714,23 @@
 
     .compare img {
       position: absolute;
-      inset: 0;
+      left: 0;
+      top: -38%;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
+      height: auto;
+      max-width: none;
     }
 
-    .compare-after {
+    .compare-after-layer {
+      position: absolute;
+      inset: 0;
       clip-path: inset(0 0 0 var(--split));
+    }
+
+    .compare-after-layer img {
+      width: 100%;
+      left: 0;
+      top: -53%;
     }
 
     .compare-label {
@@ -1158,7 +1166,7 @@
       <div class="before-after-wrap">
         <div class="compare" style="--split: 50%;">
           <img src="/assets/cupra-leon-vz-before.jpeg" alt="Cupra Leon VZ antes de la transformacion, con la puerta del taller abierta">
-          <img class="compare-after" src="/assets/cupra-leon-vz-after.jpeg" alt="Cupra Leon VZ despues de la transformacion, con la puerta del taller cerrada">
+          <div class="compare-after-layer"><img class="compare-after" src="/assets/cupra-leon-vz-after.jpeg" alt="Cupra Leon VZ despues de la transformacion, con la puerta del taller cerrada"></div>
           <span class="compare-label before">Antes</span>
           <span class="compare-label after">Despues</span>
           <span class="compare-handle" aria-hidden="true"></span>
