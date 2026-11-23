@@ -10,6 +10,7 @@
     header.append(nav);
   }
   nav.classList.add('fl-mobile-nav');nav.id='fl-mobile-navigation';
+  for(const [label,href]of [['HAZTE VIP','/vip.html'],['Mi FL VIP','/mi-vip.html']])if(!nav.querySelector('a[href="'+href+'"]')){const a=document.createElement('a');a.textContent=label;a.href=href;nav.append(a);}
   const links=document.createElement('div');links.className='fl-mobile-links';while(nav.firstChild)links.append(nav.firstChild);nav.append(links);
   const masthead=document.createElement('div');masthead.className='fl-mobile-masthead';
   const brand=header.querySelector('a:first-child').cloneNode(true);brand.classList.add('fl-mobile-brand');masthead.append(brand);
@@ -19,6 +20,10 @@
   nav.append(footer);
   let booking=header.querySelector('.booking-header-button');
   if(!booking){booking=document.createElement('a');booking.href='/citas.html';booking.textContent='PEDIR CITA';booking.className='booking-header-button fl-mobile-only';header.append(booking);}
+  booking.classList.remove('fl-mobile-only');
+  const actions=document.createElement('div');actions.className='fl-header-actions';booking.before(actions);actions.append(booking);
+  const vip=document.createElement('a');vip.className='fl-header-vip';vip.href='/vip.html';vip.textContent='HAZTE VIP';actions.append(vip);
+  const vipStyle=document.createElement('link');vipStyle.rel='stylesheet';vipStyle.href='/vip-nav.css?v=1';document.head.append(vipStyle);
   const toggle=document.createElement('button');toggle.type='button';toggle.className='fl-mobile-menu-toggle';toggle.setAttribute('aria-controls',nav.id);toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú');toggle.title='Abrir menú';
   const symbol=document.createElement('span');symbol.setAttribute('aria-hidden','true');symbol.textContent='☰';toggle.append(symbol);header.append(toggle);
   const mobile=matchMedia('(max-width: 980px)');

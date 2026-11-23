@@ -15,6 +15,7 @@
     }
   ],
   "routes": [
+    {"src":"/api/vip","dest":"/api/vip.js"},
     {"src":"/api/tlr-catalog","dest":"/api/tlr-catalog.js"},
     {
       "src": "/",

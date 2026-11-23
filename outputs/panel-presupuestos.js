@@ -47,10 +47,10 @@
     try{
       $('admin-status').textContent='Consultando solicitudes…';
       const quotes=await call('/api/repro-quotes?action=list');
-      $('admin-login').hidden=true;$('admin-refresh').hidden=false;$('admin-logout').hidden=false;$('admin-password').value='';$('admin-workspace').hidden=false;window.FLAdminAgenda.load(call);
+      $('admin-login').hidden=true;$('admin-refresh').hidden=false;$('admin-logout').hidden=false;$('admin-password').value='';$('admin-workspace').hidden=false;window.FLAdminAgenda.load(call);window.FLAdminVIP?.load(call);
       $('admin-quotes').replaceChildren(...quotes.filter(q=>!q.config.adminArchived&&!q.config.manualAppointment).map(renderQuote));$('admin-status').textContent='Sesión privada iniciada · taller@factorlambda.com';
     }catch(e){$('admin-status').textContent=e.message;}
   }
   $('admin-login').onsubmit=e=>{e.preventDefault();password=$('admin-password').value;refresh();};$('admin-refresh').onclick=refresh;
-  $('admin-logout').onclick=()=>{password='';window.FLAdminAgenda.clear();$('admin-workspace').hidden=true;$('admin-quotes').replaceChildren();$('admin-login').hidden=false;$('admin-refresh').hidden=true;$('admin-logout').hidden=true;$('admin-status').textContent='Sesión cerrada.';};
+  $('admin-logout').onclick=()=>{password='';window.FLAdminAgenda.clear();window.FLAdminVIP?.clear();$('admin-workspace').hidden=true;$('admin-quotes').replaceChildren();$('admin-login').hidden=false;$('admin-refresh').hidden=true;$('admin-logout').hidden=true;$('admin-status').textContent='Sesión cerrada.';};
 })();

@@ -5,6 +5,7 @@ const instagramFeed = require("./api/instagram-feed");
 const reproQuotes = require("./api/repro-quotes");
 const stripeWebhook = require("./api/stripe-webhook");
 const tlrCatalog = require('./api/tlr-catalog');
+const vip = require('./api/vip');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "outputs");
@@ -30,6 +31,7 @@ function createApiResponse(res) {
     setHeader: (name, value) => res.setHeader(name, value),
     status: (statusCode) => ({
       json: (payload) => sendJson(res, statusCode, payload),
+      send: (payload) => { res.statusCode=statusCode;res.end(payload); },
       end: () => {
         res.statusCode = statusCode;
         res.end();
@@ -63,6 +65,7 @@ function serveStatic(req, res) {
 
 const server = http.createServer((req, res) => {
   const route = new URL(req.url, 'http://localhost').pathname;
+  if (route === '/api/vip') { vip(req, createApiResponse(res)); return; }
   if (route === '/api/tlr-catalog') {tlrCatalog(req, createApiResponse(res));return;}
   if (route === '/api/repro-quotes' || route === '/api/stripe-webhook') {
     (route === '/api/repro-quotes' ? reproQuotes : stripeWebhook)(req, createApiResponse(res));
