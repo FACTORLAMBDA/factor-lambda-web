@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict');
+process.env.SUPABASE_URL='https://project.supabase.co';process.env.SUPABASE_SERVICE_ROLE_KEY='test-key';
+let generated,verified,updated,cookies,sent,providerEnabled=false;
+const session={access_token:'access',refresh_token:'refresh',expires_in:3600};
+const client={auth:{signInWithPassword:async({password})=>password==='correct-password'?{data:{session,user:{email_confirmed_at:'now'}}}:{error:{}},admin:{generateLink:async p=>{generated=p;return {data:{properties:{hashed_token:'single-use'}}};}},verifyOtp:async p=>{verified=p;return p.token_hash==='valid-recovery'?{data:{session}}:{error:{}};},updateUser:async p=>{updated=p;return {data:{}};},signOut:async()=>({})}};
+global.fetch=async url=>({ok:true,json:async()=>url.includes('siteverify')?{success:true,hostname:'www.factorlambda.com',action:'vip-login'}:{external:{google:providerEnabled,azure:false}}});
+const auth=require('../lib/vip-auth')({db:()=>client,rpc:async()=>true,site:()=> 'https://www.factorlambda.com',sendMail:async(...args)=>{sent=args;},setCookies:(_,s)=>{cookies=s;},fail:(message,status=400)=>{throw Object.assign(Error(message),{status});}});
+const req={headers:{'x-forwarded-for':'127.0.0.1'}},data={email:'Client@example.com',password:'correct-password',turnstileToken:'token',accepted:true,name:'Cliente'};
+(async()=>{
+ assert.equal((await auth.passwordLogin(req,{},data)).authenticated,true);assert.equal(cookies,session);
+ await assert.rejects(()=>auth.passwordLogin(req,{}, {...data,password:'wrong-password'}),e=>e.status===401);
+ await auth.signup(req,data);assert.equal(generated.type,'signup');assert.equal(generated.password,data.password);assert.ok(sent[2].includes('type=signup'));
+ await auth.forgot(req,data);assert.equal(generated.type,'recovery');assert.equal(generated.password,undefined);assert.ok(sent[2].includes('type=recovery'));
+ await assert.rejects(()=>auth.reset({}, {password:'new-password-123',tokenHash:'bad'}),e=>e.status===401);assert.equal(updated,undefined);
+ await auth.reset({}, {password:'new-password-123',tokenHash:'valid-recovery'});assert.equal(verified.type,'recovery');assert.deepEqual(updated,{password:'new-password-123'});assert.equal(cookies,null);
+ await assert.rejects(()=>auth.oauth({}, {provider:'google',accepted:true}),e=>e.status===503);
+ await assert.rejects(()=>auth.oauth({}, {provider:'evil',accepted:true}));
+ providerEnabled=true;let flowCookie;const external=await auth.oauth({setHeader:(name,value)=>{flowCookie=value;}},{provider:'google',accepted:true});const authorize=new URL(external.url);assert.equal(authorize.searchParams.get('provider'),'google');assert.ok(authorize.searchParams.get('code_challenge'));assert.ok(flowCookie.includes('HttpOnly'));assert.ok(flowCookie.includes('Secure'));assert.ok(!external.url.includes('test-key'));
+ await assert.rejects(()=>auth.callback({headers:{}},{},new URLSearchParams('code=forged&state=forged')),e=>e.status===401);
+ console.log('PASS password login, signup confirmation, recovery-only password reset, disabled provider and OAuth state guards.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

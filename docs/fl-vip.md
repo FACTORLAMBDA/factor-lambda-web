@@ -6,7 +6,18 @@
 - FL Performance: 999 / 11699, 10%, incluyendo electronica.
 - FL Elite: 1420 / 16499, 15%, incluyendo diagnosis, tarjeta fisica e inspeccion anual.
 - Euros y precios finales con IVA incluido; Stripe Tax, nunca sumar otro 21% al precio.
-- Supabase Auth por enlace personal, sesiones HttpOnly/Secure/SameSite.
+- Supabase Auth por correo y contrasena, sesiones HttpOnly/Secure/SameSite.
+  Alta con confirmacion unica del correo; recuperacion con enlace de un solo uso,
+  contrasena nueva y cierre global de sesiones. Acceso habitual sin enlaces.
+  OAuth Google/Azure con PKCE y estado ligado a cookie de diez minutos.
+  Los botones consultan /auth/v1/settings y solo se habilitan si el proveedor
+  esta realmente activo. Google y Azure estaban desactivados el 2026-11-23.
+  Deben configurarse sus aplicaciones en Google Cloud / Microsoft Entra y sus
+  credenciales en Supabase, sin publicarlas en el frontend ni en este repositorio.
+  Autorizar en Supabase el redirect de la web:
+  https://www.factorlambda.com/api/vip?action=oauth-callback&state=*
+  El callback de cada aplicacion OAuth es el que indica Supabase en el proveedor.
+  No se ha desactivado la confirmacion de correo ni rebajado la seguridad del proyecto.
 - DNI/NIE validado y cifrado AES-GCM. Numero privado FL-DNI. Un hash HMAC unico
   evita registrar el mismo documento en varias cuentas. No se usa el DNI en URLs,
   referidos ni en metadatos de Stripe. La clave debe permanecer estable.
@@ -47,14 +58,40 @@
 
 No se modifica el acceso existente del taller ni la agenda. VIP_ENABLED es false
 por defecto: la pagina informa de la activacion pendiente y no admite cobros.
-La conexion MCP de Stripe permite lecturas, pero las mutaciones devolvieron una
-peticion repetida de autorizacion; no se crearon registros fiscales ni tarifas.
+## Configuracion de produccion (2026-11-23)
+
+- Migracion ejecutada en Supabase elcfswloiysqldedcxcb: Success. No rows returned.
+- Registro fiscal ES activo, confirmado por el titular: taxreg_1UeyRQRxloPkHv3vo87VUz9b.
+- Categoria Servicios generales confirmada por el titular: txcd_20030000.
+- Previsualizacion de factura ES: total 599, base 495, IVA incluido 104 centimos;
+  automatic_tax complete y taxability_reason standard_rated. No se hizo un cargo.
+- Portal bpc_1UeyTZRxloPkHv3vrFgkMqui: facturas, actualizacion de tarjeta,
+  cancelacion al final del periodo y sin cambios de plan.
+- Webhook we_1UXJoHRxloPkHv3vDJ8iPR3U ampliado con los eventos enumerados arriba.
+- Tarifas guardadas en Vercel; VIP_ENABLED=true tras la verificacion 2FA del titular.
+
+| Variable | Price de Stripe (live, EUR, IVA incluido) |
+| --- | --- |
+| VIP_PRICE_ESSENTIAL_MONTHLY | price_1UeySVRxloPkHv3vFUCFDkNm |
+| VIP_PRICE_ESSENTIAL_ANNUAL | price_1UeySwRxloPkHv3v8XxSSlAB |
+| VIP_PRICE_PERFORMANCE_MONTHLY | price_1UeySYRxloPkHv3vw8GXo8dX |
+| VIP_PRICE_PERFORMANCE_ANNUAL | price_1UeySzRxloPkHv3vW5Pc44Tx |
+| VIP_PRICE_ELITE_MONTHLY | price_1UeyScRxloPkHv3vHpaEY2SK |
+| VIP_PRICE_ELITE_ANNUAL | price_1UeyT3RxloPkHv3vkHoaSuQo |
+
+Publicado en Vercel: BXCuD3mVTuuWbCvr53EnfHTq2M4P, estado Ready, Production.
+Verificacion publica: /api/vip?action=config devuelve enabled=true, checkout=true,
+test=false y los seis importes correctos.
+Las pruebas locales usan Stripe simulado; no equivalen a una compra real ni a una
+prueba completa del ciclo de suscripcion en un sandbox de Stripe.
 
 ## Pruebas locales
 
 node tests/vip-sql.cjs
 node tests/vip-service.cjs
 node tests/vip-identity.cjs
+node tests/vip-auth.cjs
+node tests/vip-auth-browser.cjs
 node tests/vip-browser.cjs
 node tests/private-calendar-browser.cjs
 

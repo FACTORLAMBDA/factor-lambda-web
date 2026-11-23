@@ -29,6 +29,7 @@ function sendJson(res, statusCode, payload) {
 function createApiResponse(res) {
   return {
     setHeader: (name, value) => res.setHeader(name, value),
+    getHeader: name => res.getHeader(name),
     status: (statusCode) => ({
       json: (payload) => sendJson(res, statusCode, payload),
       send: (payload) => { res.statusCode=statusCode;res.end(payload); },
