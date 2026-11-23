@@ -25,6 +25,10 @@ create table if not exists public.fl_vip_claims(
  id uuid primary key default gen_random_uuid(),user_id uuid not null,mode text not null,kind text not null,period integer not null default 0,
  note text not null,created_at timestamptz not null default now(),unique(user_id,mode,kind,period),foreign key(user_id,mode) references public.fl_vip_memberships(user_id,mode));
 create table if not exists public.fl_vip_throttle(key text primary key,last_at timestamptz not null);
+create table if not exists public.fl_vip_risk_invoices(id text primary key,created_at timestamptz not null default now());
+alter table public.fl_vip_risk_invoices enable row level security;
+revoke all on public.fl_vip_risk_invoices from public,anon,authenticated;
+grant all on public.fl_vip_risk_invoices to service_role;
 create or replace function public.fl_vip_balances(p_users uuid[],p_mode text)
 returns table(user_id uuid,balance bigint) language sql security definer set search_path=public,pg_temp as $$
 select p.user_id,sum(p.delta) from fl_vip_points p where p.user_id=any(p_users) and p.mode=p_mode group by p.user_id;
@@ -69,6 +73,11 @@ begin
  if not found or m.subscription_id is distinct from p_subscription or p_amount<=0 then raise exception 'Invalid VIP invoice';end if;
  insert into fl_vip_invoices(id,user_id,mode,subscription_id,amount_cents,paid_at) values(p_invoice,p_user,p_mode,p_subscription,p_amount,now()) on conflict do nothing;
  if not found then return to_jsonb(m);end if;
+ if exists(select 1 from fl_vip_risk_invoices where id=p_invoice) then
+ update fl_vip_invoices set revoked=true where id=p_invoice;
+ update fl_vip_memberships set risk=true where user_id=p_user and mode=p_mode returning * into m;
+ return to_jsonb(m);
+ end if;
  first_payment:=m.first_paid_at is null;
  update fl_vip_memberships set first_paid_at=coalesce(first_paid_at,now()),paid_until=greatest(paid_until,p_until),updated_at=now() where user_id=p_user and mode=p_mode returning * into m;
  if first_payment then
@@ -82,6 +91,7 @@ begin
 end;$$;
 create or replace function public.fl_vip_revoke_invoice(p_invoice text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
 begin
+ insert into fl_vip_risk_invoices(id) values(p_invoice) on conflict do nothing;
  update fl_vip_invoices set revoked=true where id=p_invoice and not revoked;
  if not found then return;end if;
  insert into fl_vip_points(user_id,mode,delta,kind,source,invoice_id)
