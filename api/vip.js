@@ -1,6 +1,7 @@
 const vip=require('../lib/vip-service');
 module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');const action=new URL(req.url,'https://localhost').searchParams.get('action')||'me';try{
  if(req.method==='GET'&&action==='config')return res.status(200).json(vip.publicConfig());
+ if(req.method==='GET'&&action==='session'){if(!vip.enabled())return res.status(200).json({authenticated:false});try{await vip.user(req,res);return res.status(200).json({authenticated:true});}catch(e){if(e.status===401)return res.status(200).json({authenticated:false});throw e;}}
  if(!vip.enabled())return res.status(503).json({error:'FL VIP está pendiente de activación. Todavía no se admiten altas ni cobros.'});
  if(req.method==='GET'&&action==='auth-options')return res.status(200).json(await vip.auth.providers());
  if(req.method==='GET'&&action==='oauth-callback'){try{await vip.auth.callback(req,res,new URL(req.url,'https://localhost').searchParams);res.setHeader('Location',vip.site()+'/mi-vip.html');}catch{res.setHeader('Location',vip.site()+'/mi-vip.html?auth=failed');}return res.status(303).end();}

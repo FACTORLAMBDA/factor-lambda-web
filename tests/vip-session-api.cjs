@@ -1,0 +1,5 @@
+const assert=require('node:assert/strict');let loggedIn=false,enabled=true;
+require.cache[require.resolve('../lib/vip-service')]={loaded:true,exports:{enabled:()=>enabled,user:async()=>{if(!loggedIn)throw Object.assign(Error('Login'),{status:401});return {id:'private-user',email:'private@example.com'};}}};
+const handler=require('../api/vip');
+async function session(){let body;const headers={};await handler({method:'GET',url:'/api/vip?action=session'},{setHeader:(k,v)=>headers[k]=v,status:code=>({json:data=>{body={code,data,headers};}})});return body;}
+(async()=>{let r=await session();assert.deepEqual(r.data,{authenticated:false});loggedIn=true;r=await session();assert.deepEqual(r.data,{authenticated:true});assert.equal(r.headers['Cache-Control'],'no-store');enabled=false;r=await session();assert.deepEqual(r.data,{authenticated:false});console.log('PASS session endpoint exposes only authentication state, disables caching and handles signed-out/disabled VIP.');})().catch(e=>{console.error(e);process.exitCode=1;});

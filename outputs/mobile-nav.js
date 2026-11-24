@@ -10,7 +10,8 @@
     header.append(nav);
   }
   nav.classList.add('fl-mobile-nav');nav.id='fl-mobile-navigation';
-  for(const [label,href]of [['HAZTE VIP','/vip.html'],['Mi FL VIP','/mi-vip.html']])if(!nav.querySelector('a[href="'+href+'"]')){const a=document.createElement('a');a.textContent=label;a.href=href;nav.append(a);}
+  for(const a of nav.querySelectorAll('a[href="/vip.html"],a[href="/mi-vip.html"]'))a.remove();
+  const vipMenu=document.createElement('a');vipMenu.textContent='HAZTE VIP';vipMenu.href='/vip.html';vipMenu.dataset.flVipLink='';nav.append(vipMenu);
   const links=document.createElement('div');links.className='fl-mobile-links';while(nav.firstChild)links.append(nav.firstChild);nav.append(links);
   const masthead=document.createElement('div');masthead.className='fl-mobile-masthead';
   const brand=header.querySelector('a:first-child').cloneNode(true);brand.classList.add('fl-mobile-brand');masthead.append(brand);
@@ -23,6 +24,9 @@
   booking.classList.remove('fl-mobile-only');
   const actions=document.createElement('div');actions.className='fl-header-actions';booking.before(actions);actions.append(booking);
   const vip=document.createElement('a');vip.className='fl-header-vip';vip.href='/vip.html';vip.textContent='HAZTE VIP';actions.append(vip);
+  let sessionRevision=0;
+  async function updateVIP(){const revision=++sessionRevision;try{const response=await fetch('/api/vip?action=session',{credentials:'same-origin',cache:'no-store'});if(!response.ok)return;const session=await response.json();if(revision!==sessionRevision)return;for(const link of [vip,vipMenu]){link.textContent=session.authenticated===true?'MI FL VIP':'HAZTE VIP';link.href=session.authenticated===true?'/mi-vip.html':'/vip.html';}}catch{}}
+  updateVIP();window.addEventListener('pageshow',updateVIP);window.addEventListener('focus',updateVIP);window.addEventListener('fl-vip-session-changed',updateVIP);
   const vipStyle=document.createElement('link');vipStyle.rel='stylesheet';vipStyle.href='/vip-nav.css?v=1';document.head.append(vipStyle);
   const toggle=document.createElement('button');toggle.type='button';toggle.className='fl-mobile-menu-toggle';toggle.setAttribute('aria-controls',nav.id);toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú');toggle.title='Abrir menú';
   const symbol=document.createElement('span');symbol.setAttribute('aria-hidden','true');symbol.textContent='☰';toggle.append(symbol);header.append(toggle);
