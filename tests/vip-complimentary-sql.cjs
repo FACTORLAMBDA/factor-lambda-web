@@ -1,0 +1,20 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),{randomUUID}=require('node:crypto');
+const {PGlite}=require('../work/pglite/package/dist/index.cjs');
+(async()=>{const db=new PGlite();try{
+ await db.exec('create schema auth;create table auth.users(id uuid primary key);create role anon;create role authenticated;create role service_role;');
+ await db.exec(fs.readFileSync('database/vip-memberships.sql','utf8'));
+ const migration=fs.readFileSync('database/vip-complimentary.sql','utf8');await db.exec(migration);await db.exec(migration);
+ const id=randomUUID();await db.query('insert into auth.users values($1)',[id]);await db.query('insert into fl_vip_profiles(id,email) values($1,$2)',[id,'test@example.com']);
+ await db.query("select fl_vip_gift_grant($1,'test','elite',now()+interval '30 days','Regalo prueba')",[id]);
+ assert.equal((await db.query('select status from fl_vip_memberships')).rows[0].status,'inactive');
+ assert.equal((await db.query('select count(*) n from fl_vip_points')).rows[0].n,0);
+ await assert.rejects(()=>db.query("select fl_vip_checkout_claim($1,'test','essential','monthly')",[id]));
+ await db.query("select fl_vip_claim($1,'test','inspection','Prueba')",[id]);
+ await assert.rejects(()=>db.query("select fl_vip_claim($1,'test','inspection','Duplicado')",[id]));
+ await db.query("update fl_vip_gifts set revoked=true where user_id=$1",[id]);
+ await assert.rejects(()=>db.query("select fl_vip_claim($1,'test','physical-card','No activo')",[id]));
+ await db.query("select fl_vip_checkout_claim($1,'test','essential','monthly')",[id]);
+ await assert.rejects(()=>db.query("select fl_vip_gift_grant($1,'test','elite',now()+interval '30 days','Pago en curso')",[id]));
+ await db.exec('set role authenticated');await assert.rejects(()=>db.query('select * from fl_vip_gifts'));await assert.rejects(()=>db.query("select fl_vip_gift_grant($1,'test','elite',now()+interval '30 days','Ataque')",[id]));
+ console.log('PASS complimentary migration, no payment/rewards, checkout exclusion, benefits, revocation and private permissions');
+ }finally{await db.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
