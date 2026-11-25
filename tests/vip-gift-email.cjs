@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+Object.assign(process.env,{SUPABASE_URL:'https://project.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test',STRIPE_MODE:'test',VIP_IDENTITY_SECRET:'test-secret-at-least-32-characters',RESEND_API_KEY:'test',QUOTE_EMAIL_FROM:'VIP <vip@example.com>',PUBLIC_SITE_URL:'https://www.factorlambda.com',QUOTE_ADMIN_PASSWORD:'test-admin'});
+const identity=require('../lib/vip-identity'),id='12345678-1234-1234-1234-123456789abc',profile={id,name:'Cliente de prueba',email:'cliente@example.com',...identity.protect('12345678Z')};let activated=false;const mails=[];
+const query={select(){return this;},eq(){return this;},single:async()=>({data:profile})};
+require.cache[require.resolve('@supabase/supabase-js')]={loaded:true,exports:{createClient:()=>({from:()=>query,rpc:async name=>{assert.equal(name,'fl_vip_gift_grant');activated=true;return {data:null};}})}};
+global.fetch=async(url,options)=>{assert.equal(url,'https://api.resend.com/emails');assert.equal(activated,true);mails.push({body:JSON.parse(options.body),key:options.headers['Idempotency-Key']});return {ok:true};};
+const vip=require('../lib/vip-service');
+(async()=>{const req={headers:{authorization:'Bearer test-admin'}},data={action:'gift-grant',confirmed:true,userId:id,plan:'elite',expiresAt:new Date(Date.now()+30*86400000).toISOString(),note:'Regalo de prueba'};
+ assert.equal((await vip.adminAction(req,data)).emailSent,true);assert.equal(mails.length,1);const mail=mails[0].body;assert.deepEqual(mail.to,[profile.email]);assert.match(mail.subject,/Cortesía/);assert.match(mail.text,/Cliente de prueba/);assert.match(mail.text,/FL-12345678Z/);assert.doesNotMatch(mail.subject,/Pago confirmado/);assert.match(mail.text,/sin coste/);assert.equal(mail.attachments[0].filename,'FL-VIP.pdf');const pdf=await require('pdf-lib').PDFDocument.load(Buffer.from(mail.attachments[0].content,'base64'));assert.equal(pdf.getPageCount(),2);
+ await vip.adminAction(req,data);assert.equal(mails[0].key,mails[1].key);assert.ok(!mails[0].key.includes('12345678Z'));
+ console.log('PASS gift welcome recipient, personalized two-page card, no paid claim, stable retry key; no real emails or payments');
+})().catch(e=>{console.error(e);process.exitCode=1;});
