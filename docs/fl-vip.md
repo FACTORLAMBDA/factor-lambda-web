@@ -87,7 +87,32 @@ prueba completa del ciclo de suscripcion en un sandbox de Stripe.
 
 ## Pruebas locales
 
+## Descuentos y referidos
+
+- Bienvenida: 2% una sola vez tras el primer pago confirmado.
+- Cada amigo distinto con primer pago confirmado aporta 1%; renovar no suma otro.
+- El campo de invitacion acepta el codigo aleatorio o el enlace de Factor Lambda.
+  Nunca usa el DNI del amigo. Se debe indicar antes del primer Checkout.
+- Invitacion conservada en este navegador hasta 30 dias para sobrevivir a la
+  confirmacion de correo o al retorno de Google. El cliente puede revisarla.
+- El 2% y el saldo por amigos no se acumulan con otras promociones ni con el
+  descuento del plan, y nunca reducen la cuota de suscripcion.
+- El panel muestra bienvenida pendiente, numero de amigos con pago valido,
+  porcentaje de amigos pendiente, usado y disponible. Al consumir saldo se cuenta
+  primero la bienvenida y despues los amigos.
+- En Clientes VIP, "Descontar saldo aplicado en factura" registra el porcentaje
+  que el taller ya ha descontado, con numero de factura y confirmacion. No cambia
+  facturas ni hace reembolsos. El historial queda guardado, no se borran movimientos.
+- Se reutiliza la funcion SQL fl_vip_redeem ya instalada: bloqueo transaccional,
+  saldo suficiente y numero de factura unico por cliente/modo. Sin migracion nueva.
+- Pruebas de SQL y navegador simuladas, sin cargos ni modificaciones a clientes reales.
+
+## Pruebas de regresion
+
 node tests/vip-sql.cjs
+node tests/vip-rewards.cjs
+node tests/vip-rewards-sql.cjs
+node tests/vip-rewards-browser.cjs
 node tests/vip-service.cjs
 node tests/vip-identity.cjs
 node tests/vip-auth.cjs

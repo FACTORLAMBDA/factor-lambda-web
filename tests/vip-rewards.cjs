@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),{summary,referralCode}=require('../lib/vip-rewards');
+const origin='https://www.factorlambda.com',code='FL-ABC1234567';
+assert.equal(referralCode(code.toLowerCase(),origin),code);assert.equal(referralCode(origin+'/vip.html?ref='+code,origin),code);
+assert.throws(()=>referralCode('https://evil.example/vip.html?ref='+code,origin));assert.throws(()=>referralCode('FL-12345678Z',origin));
+const rows=[{id:'w',kind:'welcome',delta:2,source:'welcome:test:a'},...['a','b','c'].map(id=>({id,kind:'referral',delta:1,source:'referral:test:'+id}))];
+assert.deepEqual(summary(rows),{welcomeGranted:2,referralCount:3,referralEarned:3,used:0,available:5,welcomeAvailable:2,referralAvailable:3});
+rows.push({kind:'redemption',delta:-2,source:'redemption:invoice1'});assert.equal(summary(rows).welcomeAvailable,0);assert.equal(summary(rows).referralAvailable,3);
+rows.push({kind:'redemption',delta:-1,source:'redemption:invoice2'});assert.equal(summary(rows).available,2);
+rows.push({kind:'reversal',delta:-1,source:'reversal:a'});assert.equal(summary(rows).referralCount,2);assert.equal(summary(rows).available,1);
+assert.equal(summary([...rows,{kind:'reversal',delta:-2,source:'reversal:w'}]).available,0);
+console.log('PASS invite code/link validation, 2% welcome, 1% per paid friend, invoice use and refund-adjusted balances.');
