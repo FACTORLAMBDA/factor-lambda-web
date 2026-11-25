@@ -104,7 +104,17 @@ prueba completa del ciclo de suscripcion en un sandbox de Stripe.
   que el taller ya ha descontado, con numero de factura y confirmacion. No cambia
   facturas ni hace reembolsos. El historial queda guardado, no se borran movimientos.
 - Se reutiliza la funcion SQL fl_vip_redeem ya instalada: bloqueo transaccional,
-  saldo suficiente y numero de factura unico por cliente/modo. Sin migracion nueva.
+  saldo suficiente y numero de factura unico por cliente/modo.
+- Edicion manual: database/vip-points-adjustment.sql instalada en produccion
+  (Success. No rows returned). "Editar puntos" fija un saldo nuevo con motivo,
+  autor propietario/taller y movimiento de ajuste; nunca borra el ledger. Valida
+  el saldo anterior con bloqueo de fila para evitar pisar un canje concurrente.
+  Un identificador de operacion evita aplicar dos veces el mismo ajuste.
+- Correo de bienvenida: probado con Resend simulado, tras invoice.paid valido,
+  adjunto FL-VIP.pdf de dos caras con nombre y numero FL-DNI; sin correo antes
+  del pago, sin duplicado al repetir el evento. No se hizo un cargo real.
+- Wallet no conectado: el PDF no es un pase firmado. Apple requiere Pass Type ID
+  y certificado; Google requiere cuenta emisora Wallet y permiso de publicacion.
 - Pruebas de SQL y navegador simuladas, sin cargos ni modificaciones a clientes reales.
 
 ## Pruebas de regresion
@@ -113,6 +123,10 @@ node tests/vip-sql.cjs
 node tests/vip-rewards.cjs
 node tests/vip-rewards-sql.cjs
 node tests/vip-rewards-browser.cjs
+node tests/vip-points-adjustment.cjs
+node tests/vip-admin-adjustment.cjs
+node tests/vip-admin-adjustment-browser.cjs
+node tests/vip-welcome-email.cjs
 node tests/vip-service.cjs
 node tests/vip-identity.cjs
 node tests/vip-auth.cjs
