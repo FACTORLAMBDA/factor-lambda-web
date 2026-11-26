@@ -1,0 +1,5 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),{clean,fix}=require('../scripts/clean-engine-labels.cjs');
+assert.equal(clean('...) - 1950cc " class="tooltip">180D (1.95D) (Euro 6 D-full 2021 ->...)'),'180D (1.95D) (Euro 6 D-full 2021 ->...)');assert.equal(clean('2.0 TSI'), '2.0 TSI');
+const sample={generations:[{id:'same-id',engines:[['Diesel','...) - 1950cc " class="tooltip">220D',190]]}]};assert.equal(fix(sample),1);assert.equal(sample.generations[0].id,'same-id');assert.deepEqual(sample.generations[0].engines[0],['Diesel','220D',190]);assert.equal(fix(sample),0);
+for(const file of fs.readdirSync('outputs/vehicle-catalog').filter(f=>f.endsWith('.json')&&f!=='index.json'))for(const g of JSON.parse(fs.readFileSync('outputs/vehicle-catalog/'+file)).generations||[])for(const engine of g.engines||[])assert.ok(!/class=|tooltip/.test(engine[1]),file+': '+g.id);
+const all=JSON.parse(fs.readFileSync('outputs/vehicle-generations.json'));assert.equal(fix(all),0);console.log('PASS clean engine labels across full and split catalogs; IDs, indexes and powers preserved');
